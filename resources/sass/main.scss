@@ -1,0 +1,39 @@
+h1, h2, h3, h4, h5, p, span, a {
+    font-family: 'Rajdhani', sans-serif;
+}
+
+
+nav {
+    a {
+        font-size:1.2em;
+    }
+    img {
+        width: 200px;
+    }
+}
+
+
+body {
+    min-height: 100vh;
+
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    
+    &#welcome {
+        background-image:url('/bg/home-bg.jpg');
+    }
+    &#player, &#team {
+        background-image:url('/bg/player-bg.jpg');
+    }
+}
+
+
+.pseudo {
+    font-size:8em;
+}
+
+
+.med-icon {
+    font-size:3em;
+}

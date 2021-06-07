@@ -21,7 +21,7 @@ var myChart = new Chart(ctx, {
         datasets: [{
                  tension: 0.1,
                  label: "Prépuce Endolori SoloQ",
-                data: {{$BriceSoloQ}},
+                data: {!!$BriceSoloQ!!},
                 backgroundColor: "pink",
                 borderColor: "pink", 
             }, {

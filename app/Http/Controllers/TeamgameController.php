@@ -18,7 +18,6 @@ class TeamgameController extends Controller
           LeagueAPI::SET_REGION => Region::EUROPE_WEST,
           ]);
           
-
           // 
           $team = Lol::all()->pluck('id_sum');
 
@@ -51,21 +50,29 @@ class TeamgameController extends Controller
               if (count($isItTeam) == 5) {
                 var_dump("match de team");
               } else {
-                $this->storeTeamGame($game);
+                $this->storeTeamGame($game, $team);
                 
                 echo count($isItTeam). " joueurs de la team présent dans cette game<br>";
               }
           }
   }
   
-  public function storeTeamGame($game) {
+  public function storeTeamGame($game, $team) {
+    // dd($game);
+    foreach ($game->participants as $participant) {
+      dd($participant);
+    }
+    // 5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw
+    foreach($team as $member) {
+      dd($member);
+    }
+
     $teamGame = TeamGame::firstOrCreate(
-      ['game_id'=> $game->gameId
+      ['game_id'=> $game->gameId],
       [
-      'mmr_soloq' => $allMMR[0],
-      'mmr_flexq' => $allMMR[1], 
+      'duree' => $game->gameDuration,
+      'victory' => $allMMR[1], 
       ]);
   
-    dd($game);
   }
 }

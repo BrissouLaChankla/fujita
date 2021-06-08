@@ -23,4 +23,8 @@ class Lol extends Model
         return $this->hasMany(Mmr::class);
     }
 
+    public function teamgames()
+    {
+        return $this->belongsToMany(TeamGame::class);
+    }
 }

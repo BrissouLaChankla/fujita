@@ -18,7 +18,7 @@ class PlayerController extends Controller
     public function index($slug) {
         
         $api = new LeagueAPI([
-            LeagueAPI::SET_KEY    => "RGAPI-fbef77f0-7049-4368-9f1e-79753caf9adf",
+            LeagueAPI::SET_KEY    => "RGAPI-9a45f100-2542-4c72-99e2-bcee24401969",
             LeagueAPI::SET_REGION => Region::EUROPE_WEST,
         ]);
 

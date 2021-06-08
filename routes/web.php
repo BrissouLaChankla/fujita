@@ -27,4 +27,4 @@ Route::get('/equipe', 'TeamController@index')->name('show-team');
 Route::get('/storeall/mmr', 'MmrController@storeAllMMR')->name('store-all-mmr');
 
 
-Route::get('/storeall/games', 'TeamgameController@storeGames')->name('store-all-games');
+Route::get('/storeall/games', 'TeamgameController@findTeamGames')->name('store-all-games');

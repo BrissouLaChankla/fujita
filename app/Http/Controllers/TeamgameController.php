@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\TeamGame;
+use App\Models\TeamGame;
+use App\Models\TeamGame_Lol;
 use Illuminate\Http\Request;
 use RiotAPI\LeagueAPI\LeagueAPI;
 use RiotAPI\Base\Definitions\Region;
@@ -11,9 +12,9 @@ use App\Models\Lol;
 
 class TeamgameController extends Controller
 {
-  public function storeGames() {
+  public function findTeamGames() {
       $api = new LeagueAPI([
-          LeagueAPI::SET_KEY    => "RGAPI-fbef77f0-7049-4368-9f1e-79753caf9adf",
+          LeagueAPI::SET_KEY    => "RGAPI-9a45f100-2542-4c72-99e2-bcee24401969",
           LeagueAPI::SET_REGION => Region::EUROPE_WEST,
           ]);
           
@@ -33,6 +34,8 @@ class TeamgameController extends Controller
           // Loop through 15 derniers de mes matchs
           foreach (array_slice($matchlist->matches, 0, 15) as $match) {
               $game = $api->getMatch($match->gameId);
+              
+              //Vide le tableau et le reset
               unset($isItTeam);
               $isItTeam = array();
               //Loop through les participants de ce match
@@ -46,11 +49,23 @@ class TeamgameController extends Controller
               }
               // si à la fin du compte y'a 5 personnes dans le nouveau tableau, c'est un match de team
               if (count($isItTeam) == 5) {
-                dd("match de team");
+                var_dump("match de team");
               } else {
-                dd($isItTeam);
+                $this->storeTeamGame($game);
+                
+                echo count($isItTeam). " joueurs de la team présent dans cette game<br>";
               }
           }
-
+  }
+  
+  public function storeTeamGame($game) {
+    $teamGame = TeamGame::firstOrCreate(
+      ['game_id'=> $game->gameId
+      [
+      'mmr_soloq' => $allMMR[0],
+      'mmr_flexq' => $allMMR[1], 
+      ]);
+  
+    dd($game);
   }
 }

@@ -109,6 +109,7 @@ module.exports = __webpack_require__(/*! ./lib/axios */ "./node_modules/axios/li
 
 var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/utils.js");
 var settle = __webpack_require__(/*! ./../core/settle */ "./node_modules/axios/lib/core/settle.js");
+var cookies = __webpack_require__(/*! ./../helpers/cookies */ "./node_modules/axios/lib/helpers/cookies.js");
 var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ "./node_modules/axios/lib/helpers/buildURL.js");
 var buildFullPath = __webpack_require__(/*! ../core/buildFullPath */ "./node_modules/axios/lib/core/buildFullPath.js");
 var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ "./node_modules/axios/lib/helpers/parseHeaders.js");
@@ -129,7 +130,7 @@ module.exports = function xhrAdapter(config) {
     // HTTP basic authentication
     if (config.auth) {
       var username = config.auth.username || '';
-      var password = config.auth.password || '';
+      var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
       requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
     }
 
@@ -210,8 +211,6 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(/*! ./../helpers/cookies */ "./node_modules/axios/lib/helpers/cookies.js");
-
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
         cookies.read(config.xsrfCookieName) :
@@ -277,7 +276,7 @@ module.exports = function xhrAdapter(config) {
       });
     }
 
-    if (requestData === undefined) {
+    if (!requestData) {
       requestData = null;
     }
 
@@ -345,6 +344,9 @@ axios.all = function all(promises) {
   return Promise.all(promises);
 };
 axios.spread = __webpack_require__(/*! ./helpers/spread */ "./node_modules/axios/lib/helpers/spread.js");
+
+// Expose isAxiosError
+axios.isAxiosError = __webpack_require__(/*! ./helpers/isAxiosError */ "./node_modules/axios/lib/helpers/isAxiosError.js");
 
 module.exports = axios;
 
@@ -554,9 +556,10 @@ Axios.prototype.getUri = function getUri(config) {
 utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
   /*eslint func-names:0*/
   Axios.prototype[method] = function(url, config) {
-    return this.request(utils.merge(config || {}, {
+    return this.request(mergeConfig(config || {}, {
       method: method,
-      url: url
+      url: url,
+      data: (config || {}).data
     }));
   };
 });
@@ -564,7 +567,7 @@ utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData
 utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
   /*eslint func-names:0*/
   Axios.prototype[method] = function(url, data, config) {
-    return this.request(utils.merge(config || {}, {
+    return this.request(mergeConfig(config || {}, {
       method: method,
       url: url,
       data: data
@@ -824,7 +827,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   error.response = response;
   error.isAxiosError = true;
 
-  error.toJSON = function() {
+  error.toJSON = function toJSON() {
     return {
       // Standard
       message: this.message,
@@ -873,59 +876,73 @@ module.exports = function mergeConfig(config1, config2) {
   config2 = config2 || {};
   var config = {};
 
-  var valueFromConfig2Keys = ['url', 'method', 'params', 'data'];
-  var mergeDeepPropertiesKeys = ['headers', 'auth', 'proxy'];
+  var valueFromConfig2Keys = ['url', 'method', 'data'];
+  var mergeDeepPropertiesKeys = ['headers', 'auth', 'proxy', 'params'];
   var defaultToConfig2Keys = [
-    'baseURL', 'url', 'transformRequest', 'transformResponse', 'paramsSerializer',
-    'timeout', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
-    'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress',
-    'maxContentLength', 'validateStatus', 'maxRedirects', 'httpAgent',
-    'httpsAgent', 'cancelToken', 'socketPath'
+    'baseURL', 'transformRequest', 'transformResponse', 'paramsSerializer',
+    'timeout', 'timeoutMessage', 'withCredentials', 'adapter', 'responseType', 'xsrfCookieName',
+    'xsrfHeaderName', 'onUploadProgress', 'onDownloadProgress', 'decompress',
+    'maxContentLength', 'maxBodyLength', 'maxRedirects', 'transport', 'httpAgent',
+    'httpsAgent', 'cancelToken', 'socketPath', 'responseEncoding'
   ];
+  var directMergeKeys = ['validateStatus'];
+
+  function getMergedValue(target, source) {
+    if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
+      return utils.merge(target, source);
+    } else if (utils.isPlainObject(source)) {
+      return utils.merge({}, source);
+    } else if (utils.isArray(source)) {
+      return source.slice();
+    }
+    return source;
+  }
+
+  function mergeDeepProperties(prop) {
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  }
 
   utils.forEach(valueFromConfig2Keys, function valueFromConfig2(prop) {
-    if (typeof config2[prop] !== 'undefined') {
-      config[prop] = config2[prop];
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
     }
   });
 
-  utils.forEach(mergeDeepPropertiesKeys, function mergeDeepProperties(prop) {
-    if (utils.isObject(config2[prop])) {
-      config[prop] = utils.deepMerge(config1[prop], config2[prop]);
-    } else if (typeof config2[prop] !== 'undefined') {
-      config[prop] = config2[prop];
-    } else if (utils.isObject(config1[prop])) {
-      config[prop] = utils.deepMerge(config1[prop]);
-    } else if (typeof config1[prop] !== 'undefined') {
-      config[prop] = config1[prop];
-    }
-  });
+  utils.forEach(mergeDeepPropertiesKeys, mergeDeepProperties);
 
   utils.forEach(defaultToConfig2Keys, function defaultToConfig2(prop) {
-    if (typeof config2[prop] !== 'undefined') {
-      config[prop] = config2[prop];
-    } else if (typeof config1[prop] !== 'undefined') {
-      config[prop] = config1[prop];
+    if (!utils.isUndefined(config2[prop])) {
+      config[prop] = getMergedValue(undefined, config2[prop]);
+    } else if (!utils.isUndefined(config1[prop])) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
+    }
+  });
+
+  utils.forEach(directMergeKeys, function merge(prop) {
+    if (prop in config2) {
+      config[prop] = getMergedValue(config1[prop], config2[prop]);
+    } else if (prop in config1) {
+      config[prop] = getMergedValue(undefined, config1[prop]);
     }
   });
 
   var axiosKeys = valueFromConfig2Keys
     .concat(mergeDeepPropertiesKeys)
-    .concat(defaultToConfig2Keys);
+    .concat(defaultToConfig2Keys)
+    .concat(directMergeKeys);
 
   var otherKeys = Object
-    .keys(config2)
+    .keys(config1)
+    .concat(Object.keys(config2))
     .filter(function filterAxiosKeys(key) {
       return axiosKeys.indexOf(key) === -1;
     });
 
-  utils.forEach(otherKeys, function otherKeysDefaultToConfig2(prop) {
-    if (typeof config2[prop] !== 'undefined') {
-      config[prop] = config2[prop];
-    } else if (typeof config1[prop] !== 'undefined') {
-      config[prop] = config1[prop];
-    }
-  });
+  utils.forEach(otherKeys, mergeDeepProperties);
 
   return config;
 };
@@ -954,7 +971,7 @@ var createError = __webpack_require__(/*! ./createError */ "./node_modules/axios
  */
 module.exports = function settle(resolve, reject, response) {
   var validateStatus = response.config.validateStatus;
-  if (!validateStatus || validateStatus(response.status)) {
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
     resolve(response);
   } else {
     reject(createError(
@@ -1086,6 +1103,7 @@ var defaults = {
   xsrfHeaderName: 'X-XSRF-TOKEN',
 
   maxContentLength: -1,
+  maxBodyLength: -1,
 
   validateStatus: function validateStatus(status) {
     return status >= 200 && status < 300;
@@ -1149,7 +1167,6 @@ var utils = __webpack_require__(/*! ./../utils */ "./node_modules/axios/lib/util
 
 function encode(val) {
   return encodeURIComponent(val).
-    replace(/%40/gi, '@').
     replace(/%3A/gi, ':').
     replace(/%24/g, '$').
     replace(/%2C/gi, ',').
@@ -1330,6 +1347,29 @@ module.exports = function isAbsoluteURL(url) {
   // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
   // by any combination of letters, digits, plus, period, or hyphen.
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/axios/lib/helpers/isAxiosError.js":
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAxiosError.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Determines whether the payload is an error thrown by Axios
+ *
+ * @param {*} payload The value to test
+ * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
+ */
+module.exports = function isAxiosError(payload) {
+  return (typeof payload === 'object') && (payload.isAxiosError === true);
 };
 
 
@@ -1659,6 +1699,21 @@ function isObject(val) {
 }
 
 /**
+ * Determine if a value is a plain Object
+ *
+ * @param {Object} val The value to test
+ * @return {boolean} True if value is a plain Object, otherwise false
+ */
+function isPlainObject(val) {
+  if (toString.call(val) !== '[object Object]') {
+    return false;
+  }
+
+  var prototype = Object.getPrototypeOf(val);
+  return prototype === null || prototype === Object.prototype;
+}
+
+/**
  * Determine if a value is a Date
  *
  * @param {Object} val The value to test
@@ -1814,34 +1869,12 @@ function forEach(obj, fn) {
 function merge(/* obj1, obj2, obj3, ... */) {
   var result = {};
   function assignValue(val, key) {
-    if (typeof result[key] === 'object' && typeof val === 'object') {
+    if (isPlainObject(result[key]) && isPlainObject(val)) {
       result[key] = merge(result[key], val);
-    } else {
-      result[key] = val;
-    }
-  }
-
-  for (var i = 0, l = arguments.length; i < l; i++) {
-    forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
- * Function equal to merge with the difference being that no reference
- * to original objects is kept.
- *
- * @see merge
- * @param {Object} obj1 Object to merge
- * @returns {Object} Result of all merge properties
- */
-function deepMerge(/* obj1, obj2, obj3, ... */) {
-  var result = {};
-  function assignValue(val, key) {
-    if (typeof result[key] === 'object' && typeof val === 'object') {
-      result[key] = deepMerge(result[key], val);
-    } else if (typeof val === 'object') {
-      result[key] = deepMerge({}, val);
+    } else if (isPlainObject(val)) {
+      result[key] = merge({}, val);
+    } else if (isArray(val)) {
+      result[key] = val.slice();
     } else {
       result[key] = val;
     }
@@ -1872,6 +1905,19 @@ function extend(a, b, thisArg) {
   return a;
 }
 
+/**
+ * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+ *
+ * @param {string} content with BOM
+ * @return {string} content value without BOM
+ */
+function stripBOM(content) {
+  if (content.charCodeAt(0) === 0xFEFF) {
+    content = content.slice(1);
+  }
+  return content;
+}
+
 module.exports = {
   isArray: isArray,
   isArrayBuffer: isArrayBuffer,
@@ -1881,6 +1927,7 @@ module.exports = {
   isString: isString,
   isNumber: isNumber,
   isObject: isObject,
+  isPlainObject: isPlainObject,
   isUndefined: isUndefined,
   isDate: isDate,
   isFile: isFile,
@@ -1891,9 +1938,9 @@ module.exports = {
   isStandardBrowserEnv: isStandardBrowserEnv,
   forEach: forEach,
   merge: merge,
-  deepMerge: deepMerge,
   extend: extend,
-  trim: trim
+  trim: trim,
+  stripBOM: stripBOM
 };
 
 
@@ -32753,1113 +32800,20 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.esm.js":
+/***/ "./node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js":
 /*!**************************************************************************************!*\
-  !*** ./node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.esm.js ***!
+  !*** ./node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js ***!
   \**************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/chart.esm.js");
-/* harmony import */ var chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js/helpers */ "./node_modules/chart.js/helpers/helpers.esm.js");
 /*!
 * chartjs-plugin-annotation v1.0.2
 * https://www.chartjs.org/chartjs-plugin-annotation/index
  * (c) 2021 chartjs-plugin-annotation Contributors
  * Released under the MIT License
  */
-
-
-
-const clickHooks = ['click', 'dblclick'];
-const moveHooks = ['enter', 'leave'];
-const hooks = clickHooks.concat(moveHooks);
-
-function updateListeners(chart, state, options) {
-  const annotations = state.annotations || [];
-  state.listened = false;
-  state.moveListened = false;
-
-  hooks.forEach(hook => {
-    if (typeof options[hook] === 'function') {
-      state.listened = true;
-      state.listeners[hook] = options[hook];
-    }
-  });
-  moveHooks.forEach(hook => {
-    if (typeof options[hook] === 'function') {
-      state.moveListened = true;
-    }
-  });
-
-  if (!state.listened || !state.moveListened) {
-    annotations.forEach(scope => {
-      if (!state.listened) {
-        clickHooks.forEach(hook => {
-          if (typeof scope[hook] === 'function') {
-            state.listened = true;
-          }
-        });
-      }
-      if (!state.moveListened) {
-        moveHooks.forEach(hook => {
-          if (typeof scope[hook] === 'function') {
-            state.listened = true;
-            state.moveListened = true;
-          }
-        });
-      }
-    });
-  }
-}
-
-function handleEvent(chart, state, event, options) {
-  if (state.listened) {
-    switch (event.type) {
-    case 'mousemove':
-    case 'mouseout':
-      handleMoveEvents(chart, state, event);
-      break;
-    case 'click':
-      handleClickEvents(chart, state, event, options);
-      break;
-    }
-  }
-}
-
-function handleMoveEvents(chart, state, event) {
-  if (!state.moveListened) {
-    return;
-  }
-
-  let element;
-
-  if (event.type === 'mousemove') {
-    element = getNearestItem(state.elements, event);
-  }
-
-  const previous = state.hovered;
-  state.hovered = element;
-
-  dispatchMoveEvents(chart, state, previous, element);
-}
-
-function dispatchMoveEvents(chart, state, previous, element) {
-  if (previous && previous !== element) {
-    dispatchEvent(chart, state, previous.options.leave || state.listeners.leave, previous);
-  }
-  if (element && element !== previous) {
-    dispatchEvent(chart, state, element.options.enter || state.listeners.enter, element);
-  }
-}
-
-function handleClickEvents(chart, state, event, options) {
-  const listeners = state.listeners;
-  const element = getNearestItem(state.elements, event);
-  if (element) {
-    const elOpts = element.options;
-    const dblclick = elOpts.dblclick || listeners.dblclick;
-    const click = elOpts.click || listeners.click;
-    if (element.clickTimeout) {
-      // 2nd click before timeout, so its a double click
-      clearTimeout(element.clickTimeout);
-      delete element.clickTimeout;
-      dispatchEvent(chart, state, dblclick, element);
-    } else if (dblclick) {
-      // if there is a dblclick handler, wait for dblClickSpeed ms before deciding its a click
-      element.clickTimeout = setTimeout(() => {
-        delete element.clickTimeout;
-        dispatchEvent(chart, state, click, element);
-      }, options.dblClickSpeed);
-    } else {
-      // no double click handler, just call the click handler directly
-      dispatchEvent(chart, state, click, element);
-    }
-  }
-}
-
-function dispatchEvent(chart, _state, handler, element) {
-  Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["callback"])(handler, [{chart, element}]);
-}
-
-function getNearestItem(elements, position) {
-  let minDistance = Number.POSITIVE_INFINITY;
-
-  return elements
-    .filter((element) => element.options.display && element.inRange(position.x, position.y))
-    .reduce((nearestItems, element) => {
-      const center = element.getCenterPoint();
-      const distance = Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["distanceBetweenPoints"])(position, center);
-
-      if (distance < minDistance) {
-        nearestItems = [element];
-        minDistance = distance;
-      } else if (distance === minDistance) {
-        // Can have multiple items at the same distance in which case we sort by size
-        nearestItems.push(element);
-      }
-
-      return nearestItems;
-    }, [])
-    .sort((a, b) => a._index - b._index)
-    .slice(0, 1)[0]; // return only the top item
-}
-
-const PI$1 = Math.PI;
-const HALF_PI = PI$1 / 2;
-
-function scaleValue(scale, value, fallback) {
-  value = typeof value === 'number' ? value : scale.parse(value);
-  return Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isFinite"])(value) ? scale.getPixelForValue(value) : fallback;
-}
-
-/**
- * Creates a "path" for a rectangle with rounded corners at position (x, y) with a
- * given size (width, height) and the same `radius` for all corners.
- * @param {CanvasRenderingContext2D} ctx - The canvas 2D Context.
- * @param {number} x - The x axis of the coordinate for the rectangle starting point.
- * @param {number} y - The y axis of the coordinate for the rectangle starting point.
- * @param {number} width - The rectangle's width.
- * @param {number} height - The rectangle's height.
- * @param {number} radius - The rounded amount (in pixels) for the four corners.
- * @todo handle `radius` as top-left, top-right, bottom-right, bottom-left array/object?
- */
-function roundedRect(ctx, x, y, width, height, radius) {
-  ctx.beginPath();
-  if (radius) {
-    const r = Math.min(radius, height / 2, width / 2);
-    const left = x + r;
-    const top = y + r;
-    const right = x + width - r;
-    const bottom = y + height - r;
-
-    ctx.moveTo(x, top);
-    if (left < right && top < bottom) {
-      ctx.arc(left, top, r, -PI$1, -HALF_PI);
-      ctx.arc(right, top, r, -HALF_PI, 0);
-      ctx.arc(right, bottom, r, 0, HALF_PI);
-      ctx.arc(left, bottom, r, HALF_PI, PI$1);
-    } else if (left < right) {
-      ctx.moveTo(left, y);
-      ctx.arc(right, top, r, -HALF_PI, HALF_PI);
-      ctx.arc(left, top, r, HALF_PI, PI$1 + HALF_PI);
-    } else if (top < bottom) {
-      ctx.arc(left, top, r, -PI$1, 0);
-      ctx.arc(left, bottom, r, 0, PI$1);
-    } else {
-      ctx.arc(left, top, r, -PI$1, PI$1);
-    }
-    ctx.closePath();
-    ctx.moveTo(x, y);
-  } else {
-    ctx.rect(x, y, width, height);
-  }
-}
-
-/**
- * Rotate a `point` relative to `center` point by `angle`
- * @param {{x: number, y: number}} point - the point to rotate
- * @param {{x: number, y: number}} center - center point for rotation
- * @param {number} angle - angle for rotation, in radians
- * @returns {{x: number, y: number}} rotated point
- */
-function rotated(point, center, angle) {
-  var cos = Math.cos(angle);
-  var sin = Math.sin(angle);
-  var cx = center.x;
-  var cy = center.y;
-
-  return {
-    x: cx + cos * (point.x - cx) - sin * (point.y - cy),
-    y: cy + sin * (point.x - cx) + cos * (point.y - cy)
-  };
-}
-
-class BoxAnnotation extends chart_js__WEBPACK_IMPORTED_MODULE_0__["Element"] {
-  inRange(mouseX, mouseY, useFinalPosition) {
-    const {x, y, width, height} = this.getProps(['x', 'y', 'width', 'height'], useFinalPosition);
-
-    return mouseX >= x &&
-			mouseX <= x + width &&
-			mouseY >= y &&
-			mouseY <= y + height;
-  }
-
-  getCenterPoint(useFinalPosition) {
-    const {x, y, width, height} = this.getProps(['x', 'y', 'width', 'height'], useFinalPosition);
-    return {
-      x: x + width / 2,
-      y: y + height / 2
-    };
-  }
-
-  draw(ctx) {
-    const {x, y, width, height, options} = this;
-
-    ctx.save();
-
-    ctx.lineWidth = options.borderWidth;
-    ctx.strokeStyle = options.borderColor;
-    ctx.fillStyle = options.backgroundColor;
-
-    ctx.setLineDash(options.borderDash);
-    ctx.lineDashOffset = options.borderDashOffset;
-
-    roundedRect(ctx, x, y, width, height, options.cornerRadius);
-    ctx.fill();
-
-    // If no border, don't draw it
-    if (options.borderWidth) {
-      ctx.stroke();
-    }
-
-    ctx.restore();
-  }
-
-  resolveElementProperties(chart, options) {
-    const xScale = chart.scales[options.xScaleID];
-    const yScale = chart.scales[options.yScaleID];
-    let {top: y, left: x, bottom: y2, right: x2} = chart.chartArea;
-    let min, max;
-
-    if (!xScale && !yScale) {
-      return {options: {}};
-    }
-
-    if (xScale) {
-      min = scaleValue(xScale, options.xMin, x);
-      max = scaleValue(xScale, options.xMax, x2);
-      x = Math.min(min, max);
-      x2 = Math.max(min, max);
-    }
-
-    if (yScale) {
-      min = scaleValue(yScale, options.yMin, y2);
-      max = scaleValue(yScale, options.yMax, y);
-      y = Math.min(min, max);
-      y2 = Math.max(min, max);
-    }
-
-    return {
-      x,
-      y,
-      x2,
-      y2,
-      width: x2 - x,
-      height: y2 - y
-    };
-  }
-}
-
-BoxAnnotation.id = 'boxAnnotation';
-
-BoxAnnotation.defaults = {
-  display: true,
-  adjustScaleRange: true,
-  borderDash: [],
-  borderDashOffset: 0,
-  borderWidth: 1,
-  cornerRadius: 0,
-  xScaleID: 'x',
-  xMin: undefined,
-  xMax: undefined,
-  yScaleID: 'y',
-  yMin: undefined,
-  yMax: undefined
-};
-
-BoxAnnotation.defaultRoutes = {
-  borderColor: 'color',
-  backgroundColor: 'color'
-};
-
-const PI = Math.PI;
-const clamp = (x, from, to) => Math.min(to, Math.max(from, x));
-const pointInLine = (p1, p2, t) => ({x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y)});
-const interpolateX = (y, p1, p2) => pointInLine(p1, p2, Math.abs((y - p1.y) / (p2.y - p1.y))).x;
-const interpolateY = (x, p1, p2) => pointInLine(p1, p2, Math.abs((x - p1.x) / (p2.x - p1.x))).y;
-const toPercent = (s) => typeof s === 'string' && s.endsWith('%') && parseFloat(s) / 100;
-
-function limitPointToArea({x, y}, p2, {top, right, bottom, left}) {
-  if (x < left) {
-    y = p2.x < left ? NaN : interpolateY(left, {x, y}, p2);
-    x = left;
-  }
-  if (x > right) {
-    y = p2.x > right ? NaN : interpolateY(right, {x, y}, p2);
-    x = right;
-  }
-  if (y < top) {
-    x = p2.y < top ? NaN : interpolateX(top, {x, y}, p2);
-    y = top;
-  }
-  if (y > bottom) {
-    x = p2.y > bottom ? NaN : interpolateX(bottom, {x, y}, p2);
-    y = bottom;
-  }
-  return {x, y};
-}
-
-function limitLineToArea(p1, p2, area) {
-  const {x, y} = limitPointToArea(p1, p2, area);
-  const {x: x2, y: y2} = limitPointToArea(p2, p1, area);
-  return {x, y, x2, y2, width: Math.abs(x2 - x), height: Math.abs(y2 - y)};
-}
-
-class LineAnnotation extends chart_js__WEBPACK_IMPORTED_MODULE_0__["Element"] {
-  intersects(x, y, epsilon = 0.001) {
-    // Adapted from https://stackoverflow.com/a/6853926/25507
-    const sqr = v => v * v;
-    const {x: x1, y: y1, x2, y2} = this;
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const lenSq = sqr(dx) + sqr(dy);
-    const t = lenSq === 0 ? -1 : ((x - x1) * dx + (y - y1) * dy) / lenSq;
-    let xx, yy;
-    if (t < 0) {
-      xx = x1;
-      yy = y1;
-    } else if (t > 1) {
-      xx = x2;
-      yy = y2;
-    } else {
-      xx = x1 + t * dx;
-      yy = y1 + t * dy;
-    }
-    return (sqr(x - xx) + sqr(y - yy)) < epsilon;
-  }
-
-  labelIsVisible() {
-    const label = this.options.label;
-    return label && label.enabled && label.content;
-  }
-
-  isOnLabel(mouseX, mouseY) {
-    const {labelRect} = this;
-    if (!labelRect || !this.labelIsVisible()) {
-      return false;
-    }
-
-    const {x, y} = rotated({x: mouseX, y: mouseY}, labelRect, -labelRect.rotation);
-    const w2 = labelRect.width / 2;
-    const h2 = labelRect.height / 2;
-    return x >= labelRect.x - w2 && x <= labelRect.x + w2 &&
-      y >= labelRect.y - h2 && y <= labelRect.y + h2;
-  }
-
-  inRange(x, y) {
-    const epsilon = this.options.borderWidth || 1;
-    return this.intersects(x, y, epsilon) || this.isOnLabel(x, y);
-  }
-
-  getCenterPoint() {
-    return {
-      x: (this.x2 + this.x) / 2,
-      y: (this.y2 + this.y) / 2
-    };
-  }
-
-  draw(ctx) {
-    const {x, y, x2, y2, options} = this;
-    ctx.save();
-
-    ctx.lineWidth = options.borderWidth;
-    ctx.strokeStyle = options.borderColor;
-    ctx.setLineDash(options.borderDash);
-    ctx.lineDashOffset = options.borderDashOffset;
-
-    // Draw
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
-    ctx.restore();
-  }
-
-  drawLabel(ctx, chartArea) {
-    if (this.labelIsVisible()) {
-      ctx.save();
-      drawLabel(ctx, this, chartArea);
-      ctx.restore();
-    }
-  }
-
-  resolveElementProperties(chart, options) {
-    const scale = chart.scales[options.scaleID];
-    let {top: y, left: x, bottom: y2, right: x2} = chart.chartArea;
-    let min, max;
-
-    if (scale) {
-      min = scaleValue(scale, options.value, NaN);
-      max = scaleValue(scale, options.endValue, min);
-      if (scale.isHorizontal()) {
-        x = min;
-        x2 = max;
-      } else {
-        y = min;
-        y2 = max;
-      }
-    } else {
-      const xScale = chart.scales[options.xScaleID];
-      const yScale = chart.scales[options.yScaleID];
-
-      if (xScale) {
-        x = scaleValue(xScale, options.xMin, x);
-        x2 = scaleValue(xScale, options.xMax, x2);
-      }
-
-      if (yScale) {
-        y = scaleValue(yScale, options.yMin, y);
-        y2 = scaleValue(yScale, options.yMax, y2);
-      }
-    }
-    return limitLineToArea({x, y}, {x: x2, y: y2}, chart.chartArea);
-  }
-}
-
-LineAnnotation.id = 'lineAnnotation';
-LineAnnotation.defaults = {
-  display: true,
-  adjustScaleRange: true,
-  borderWidth: 2,
-  borderDash: [],
-  borderDashOffset: 0,
-  label: {
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    drawTime: undefined,
-    font: {
-      family: undefined,
-      lineHeight: undefined,
-      size: undefined,
-      style: 'bold',
-      weight: undefined
-    },
-    color: '#fff',
-    xPadding: 6,
-    yPadding: 6,
-    rotation: 0,
-    cornerRadius: 6,
-    position: 'center',
-    xAdjust: 0,
-    yAdjust: 0,
-    textAlign: 'center',
-    enabled: false,
-    content: null
-  },
-  value: undefined,
-  endValue: undefined,
-  scaleID: undefined,
-  xScaleID: 'x',
-  xMin: undefined,
-  xMax: undefined,
-  yScaleID: 'y',
-  yMin: undefined,
-  yMax: undefined
-};
-
-LineAnnotation.defaultRoutes = {
-  borderColor: 'color'
-};
-
-function calculateAutoRotation(line) {
-  const {x, y, x2, y2} = line;
-  const rotation = Math.atan2(y2 - y, x2 - x);
-  // Flip the rotation if it goes > PI/2 or < -PI/2, so label stays upright
-  return rotation > PI / 2 ? rotation - PI : rotation < PI / -2 ? rotation + PI : rotation;
-}
-
-function drawLabel(ctx, line, chartArea) {
-  const label = line.options.label;
-
-  ctx.font = Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["toFontString"])(label.font);
-
-  const {width, height} = measureLabel(ctx, label);
-  const rect = line.labelRect = calculateLabelPosition(line, width, height, chartArea);
-
-  ctx.translate(rect.x, rect.y);
-  ctx.rotate(rect.rotation);
-
-  ctx.fillStyle = label.backgroundColor;
-  roundedRect(ctx, -(width / 2), -(height / 2), width, height, label.cornerRadius);
-  ctx.fill();
-
-  ctx.fillStyle = label.color;
-  if (Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isArray"])(label.content)) {
-    ctx.textAlign = label.textAlign;
-    const x = calculateLabelXAlignment(label, width);
-    let textYPosition = -(height / 2) + label.yPadding;
-    for (let i = 0; i < label.content.length; i++) {
-      ctx.textBaseline = 'top';
-      ctx.fillText(
-        label.content[i],
-        x,
-        textYPosition
-      );
-      textYPosition += label.font.size + label.yPadding;
-    }
-  } else if (label.content instanceof Image) {
-    const x = -(width / 2) + label.xPadding;
-    const y = -(height / 2) + label.yPadding;
-    ctx.drawImage(label.content, x, y, width - (2 * label.xPadding), height - (2 * label.yPadding));
-  } else {
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label.content, 0, 0);
-  }
-}
-
-function calculateLabelXAlignment(label, width) {
-  const {textAlign, xPadding} = label;
-  if (textAlign === 'start') {
-    return -(width / 2) + xPadding;
-  } else if (textAlign === 'end') {
-    return +(width / 2) - xPadding;
-  }
-  return 0;
-}
-
-function getImageSize(size, value) {
-  if (typeof value === 'number') {
-    return value;
-  } else if (typeof value === 'string') {
-    return toPercent(value) * size;
-  }
-  return size;
-}
-
-const widthCache = new Map();
-function measureLabel(ctx, label) {
-  const content = label.content;
-  if (content instanceof Image) {
-    return {
-      width: getImageSize(content.width, label.width) + 2 * label.xPadding,
-      height: getImageSize(content.height, label.height) + 2 * label.yPadding
-    };
-  }
-  const lines = Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isArray"])(content) ? content : [content];
-  const count = lines.length;
-  let width = 0;
-  for (let i = 0; i < count; i++) {
-    const text = lines[i];
-    if (!widthCache.has(text)) {
-      widthCache.set(text, ctx.measureText(text).width);
-    }
-    width = Math.max(width, widthCache.get(text));
-  }
-  width += 2 * label.xPadding;
-
-  return {
-    width,
-    height: count * label.font.size + ((count + 1) * label.yPadding)
-  };
-}
-
-function calculateLabelPosition(line, width, height, chartArea) {
-  const label = line.options.label;
-  const {xAdjust, yAdjust, xPadding, yPadding, position} = label;
-  const p1 = {x: line.x, y: line.y};
-  const p2 = {x: line.x2, y: line.y2};
-  const rotation = label.rotation === 'auto' ? calculateAutoRotation(line) : Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["toRadians"])(label.rotation);
-  const size = rotatedSize(width, height, rotation);
-  const t = calculateT(line, position, size, chartArea);
-  const pt = pointInLine(p1, p2, t);
-  const xCoordinateSizes = {size: size.w, min: chartArea.left, max: chartArea.right, padding: xPadding};
-  const yCoordinateSizes = {size: size.h, min: chartArea.top, max: chartArea.bottom, padding: yPadding};
-
-  return {
-    x: adjustLabelCoordinate(pt.x, xCoordinateSizes) + xAdjust,
-    y: adjustLabelCoordinate(pt.y, yCoordinateSizes) + yAdjust,
-    width,
-    height,
-    rotation
-  };
-}
-
-function rotatedSize(width, height, rotation) {
-  const cos = Math.cos(rotation);
-  const sin = Math.sin(rotation);
-  return {
-    w: Math.abs(width * cos) + Math.abs(height * sin),
-    h: Math.abs(width * sin) + Math.abs(height * cos)
-  };
-}
-
-function calculateT(line, position, rotSize, chartArea) {
-  let t = 0.5;
-  const space = spaceAround(line, chartArea);
-  const label = line.options.label;
-  if (position === 'start') {
-    t = calculateTAdjust({w: line.x2 - line.x, h: line.y2 - line.y}, rotSize, label, space);
-  } else if (position === 'end') {
-    t = 1 - calculateTAdjust({w: line.x - line.x2, h: line.y - line.y2}, rotSize, label, space);
-  }
-  return t;
-}
-
-function calculateTAdjust(lineSize, labelSize, label, space) {
-  const {xPadding, yPadding} = label;
-  const lineW = lineSize.w * space.dx;
-  const lineH = lineSize.h * space.dy;
-  const x = (lineW > 0) && ((labelSize.w / 2 + xPadding - space.x) / lineW);
-  const y = (lineH > 0) && ((labelSize.h / 2 + yPadding - space.y) / lineH);
-  return clamp(Math.max(x, y), 0, 0.25);
-}
-
-function spaceAround(line, chartArea) {
-  const {x, x2, y, y2} = line;
-  const t = Math.min(y, y2) - chartArea.top;
-  const l = Math.min(x, x2) - chartArea.left;
-  const b = chartArea.bottom - Math.max(y, y2);
-  const r = chartArea.right - Math.max(x, x2);
-  return {
-    x: Math.min(l, r),
-    y: Math.min(t, b),
-    dx: l < r ? 1 : -1,
-    dy: t < b ? 1 : -1
-  };
-}
-
-function adjustLabelCoordinate(coordinate, labelSizes) {
-  const {size, min, max, padding} = labelSizes;
-  const halfSize = size / 2;
-
-  if (size > max - min) {
-    // if it does not fit, display as much as possible
-    return (max + min) / 2;
-  }
-
-  if (min >= (coordinate - padding - halfSize)) {
-    coordinate = min + padding + halfSize;
-  }
-
-  if (max <= (coordinate + padding + halfSize)) {
-    coordinate = max - padding - halfSize;
-  }
-
-  return coordinate;
-}
-
-class EllipseAnnotation extends BoxAnnotation {
-
-  inRange(x, y) {
-    return pointInEllipse({x, y}, this);
-  }
-
-  draw(ctx) {
-    const {width, height, options} = this;
-    const center = this.getCenterPoint();
-
-    ctx.save();
-
-    ctx.beginPath();
-
-    ctx.lineWidth = options.borderWidth;
-    ctx.strokeStyle = options.borderColor;
-    ctx.fillStyle = options.backgroundColor;
-
-    ctx.setLineDash(options.borderDash);
-    ctx.lineDashOffset = options.borderDashOffset;
-
-    ctx.ellipse(center.x, center.y, height / 2, width / 2, Math.PI / 2, 0, 2 * Math.PI);
-
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.restore();
-  }
-}
-
-EllipseAnnotation.id = 'ellipseAnnotation';
-
-EllipseAnnotation.defaults = {
-  display: true,
-  adjustScaleRange: true,
-  borderDash: [],
-  borderDashOffset: 0,
-  borderWidth: 1,
-  xScaleID: 'x',
-  xMin: undefined,
-  xMax: undefined,
-  yScaleID: 'y',
-  yMin: undefined,
-  yMax: undefined
-};
-
-EllipseAnnotation.defaultRoutes = {
-  borderColor: 'color',
-  backgroundColor: 'color'
-};
-
-function pointInEllipse(p, ellipse) {
-  const {width, height} = ellipse;
-  const center = ellipse.getCenterPoint(true);
-  const xRadius = width / 2;
-  const yRadius = height / 2;
-
-  if (xRadius <= 0 || yRadius <= 0) {
-    return false;
-  }
-
-  return (Math.pow(p.x - center.x, 2) / Math.pow(xRadius, 2)) + (Math.pow(p.y - center.y, 2) / Math.pow(yRadius, 2)) <= 1.0;
-}
-
-class PointAnnotation extends chart_js__WEBPACK_IMPORTED_MODULE_0__["Element"] {
-
-  inRange(x, y) {
-    const {width, options} = this;
-    const center = this.getCenterPoint(true);
-    const radius = width / 2 + options.borderWidth;
-
-    if (radius <= 0) {
-      return false;
-    }
-
-    return (Math.pow(x - center.x, 2) + Math.pow(y - center.y, 2)) <= Math.pow(radius, 2);
-  }
-
-  getCenterPoint(useFinalPosition) {
-    const {x, y} = this.getProps(['x', 'y'], useFinalPosition);
-    return {x, y};
-  }
-
-  draw(ctx) {
-    const {x, y, width, options} = this;
-
-    ctx.save();
-
-    ctx.lineWidth = options.borderWidth;
-    ctx.strokeStyle = options.borderColor;
-    ctx.fillStyle = options.backgroundColor;
-
-    ctx.setLineDash(options.borderDash);
-    ctx.lineDashOffset = options.borderDashOffset;
-
-    ctx.beginPath();
-    ctx.arc(x, y, width / 2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.restore();
-  }
-
-  resolveElementProperties(chart, options) {
-    const {chartArea, scales} = chart;
-    const xScale = scales[options.xScaleID];
-    const yScale = scales[options.yScaleID];
-    let x = chartArea.width / 2;
-    let y = chartArea.height / 2;
-
-    if (xScale) {
-      x = scaleValue(xScale, options.xValue, x);
-    }
-
-    if (yScale) {
-      y = scaleValue(yScale, options.yValue, y);
-    }
-
-    return {
-      x,
-      y,
-      width: options.radius * 2,
-      height: options.radius * 2
-    };
-  }
-}
-
-PointAnnotation.id = 'pointAnnotation';
-
-PointAnnotation.defaults = {
-  display: true,
-  adjustScaleRange: true,
-  borderDash: [],
-  borderDashOffset: 0,
-  borderWidth: 1,
-  radius: 10,
-  xScaleID: 'x',
-  xValue: undefined,
-  yScaleID: 'y',
-  yValue: undefined
-};
-
-PointAnnotation.defaultRoutes = {
-  borderColor: 'color',
-  backgroundColor: 'color'
-};
-
-var version = "1.0.2";
-
-const chartStates = new Map();
-
-const annotationTypes = {
-  box: BoxAnnotation,
-  line: LineAnnotation,
-  ellipse: EllipseAnnotation,
-  point: PointAnnotation
-};
-
-Object.keys(annotationTypes).forEach(key => {
-  chart_js__WEBPACK_IMPORTED_MODULE_0__["defaults"].describe(`elements.${annotationTypes[key].id}`, {
-    _fallback: 'plugins.annotation'
-  });
-});
-
-var annotation = {
-  id: 'annotation',
-
-  version,
-
-  afterRegister() {
-    chart_js__WEBPACK_IMPORTED_MODULE_0__["Chart"].register(annotationTypes);
-  },
-
-  afterUnregister() {
-    chart_js__WEBPACK_IMPORTED_MODULE_0__["Chart"].unregister(annotationTypes);
-  },
-
-  beforeInit(chart) {
-    chartStates.set(chart, {
-      annotations: [],
-      elements: [],
-      listeners: {},
-      listened: false,
-      moveListened: false
-    });
-  },
-
-  beforeUpdate(chart, args, options) {
-    const state = chartStates.get(chart);
-    const annotations = state.annotations = [];
-
-    let annotationOptions = options.annotations;
-    if (Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isObject"])(annotationOptions)) {
-      Object.keys(annotationOptions).forEach(key => {
-        const value = annotationOptions[key];
-        if (Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isObject"])(value)) {
-          value.id = key;
-          annotations.push(value);
-        }
-      });
-    } else if (Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isArray"])(annotationOptions)) {
-      annotations.push(...annotationOptions);
-    }
-  },
-
-  afterDataLimits(chart, args) {
-    const state = chartStates.get(chart);
-    adjustScaleRange(chart, args.scale, state.annotations.filter(a => a.display && a.adjustScaleRange));
-  },
-
-  afterUpdate(chart, args, options) {
-    const state = chartStates.get(chart);
-    updateListeners(chart, state, options);
-    updateElements(chart, state, options, args.mode);
-  },
-
-  beforeDatasetsDraw(chart) {
-    draw(chart, 'beforeDatasetsDraw');
-  },
-
-  afterDatasetsDraw(chart) {
-    draw(chart, 'afterDatasetsDraw');
-  },
-
-  beforeDraw(chart) {
-    draw(chart, 'beforeDraw');
-  },
-
-  afterDraw(chart) {
-    draw(chart, 'afterDraw');
-  },
-
-  beforeEvent(chart, args, options) {
-    const state = chartStates.get(chart);
-    handleEvent(chart, state, args.event, options);
-  },
-
-  destroy(chart) {
-    chartStates.delete(chart);
-  },
-
-  _getState(chart) {
-    return chartStates.get(chart);
-  },
-
-  defaults: {
-    drawTime: 'afterDatasetsDraw',
-    dblClickSpeed: 350, // ms
-    animations: {
-      numbers: {
-        properties: ['x', 'y', 'x2', 'y2', 'width', 'height'],
-        type: 'number'
-      },
-    },
-    label: {
-      drawTime: null
-    }
-  },
-
-  descriptors: {
-    _indexable: false,
-    _scriptable: (prop) => !hooks.includes(prop),
-    annotations: {
-      _allKeys: false,
-      _fallback: (prop, opts) => `elements.${annotationTypes[opts.type || 'line'].id}`,
-    },
-  },
-
-  additionalOptionScopes: ['']
-};
-
-const directUpdater = {
-  update: Object.assign
-};
-
-function resolveAnimations(chart, animOpts, mode) {
-  if (mode === 'reset' || mode === 'none' || mode === 'resize') {
-    return directUpdater;
-  }
-  return new chart_js__WEBPACK_IMPORTED_MODULE_0__["Animations"](chart, animOpts);
-}
-
-function updateElements(chart, state, options, mode) {
-  const animations = resolveAnimations(chart, options.animations, mode);
-
-  const annotations = state.annotations;
-  const elements = resyncElements(state.elements, annotations);
-
-  for (let i = 0; i < annotations.length; i++) {
-    const annotation = annotations[i];
-    let el = elements[i];
-    const elType = annotationTypes[annotation.type] || annotationTypes.line;
-    if (!el || !(el instanceof elType)) {
-      el = elements[i] = new elType();
-    }
-    const opts = resolveAnnotationOptions(annotation.setContext(getContext(chart, el, annotation)));
-    const properties = el.resolveElementProperties(chart, opts);
-    properties.skip = isNaN(properties.x) || isNaN(properties.y);
-    properties.options = opts;
-    animations.update(el, properties);
-  }
-}
-
-function resolveAnnotationOptions(resolver) {
-  const elType = annotationTypes[resolver.type] || annotationTypes.line;
-  const result = {};
-  result.id = resolver.id;
-  result.type = resolver.type;
-  result.drawTime = resolver.drawTime;
-  Object.assign(result, resolveObj(resolver, elType.defaults), resolveObj(resolver, elType.defaultRoutes));
-  for (const hook of hooks) {
-    result[hook] = resolver[hook];
-  }
-  return result;
-}
-
-function resolveObj(resolver, defs) {
-  const result = {};
-  for (const name of Object.keys(defs)) {
-    const optDefs = defs[name];
-    const value = resolver[name];
-    result[name] = Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isObject"])(optDefs) ? resolveObj(value, optDefs) : value;
-  }
-  return result;
-}
-
-function getContext(chart, element, annotation) {
-  return element.$context || (element.$context = Object.assign(Object.create(chart.getContext()), {
-    element,
-    id: annotation.id,
-    type: 'annotation'
-  }));
-}
-
-function resyncElements(elements, annotations) {
-  const count = annotations.length;
-  const start = elements.length;
-
-  if (start < count) {
-    const add = count - start;
-    elements.splice(start, 0, ...new Array(add));
-  } else if (start > count) {
-    elements.splice(count, start - count);
-  }
-  return elements;
-}
-
-function draw(chart, caller) {
-  const {ctx, chartArea} = chart;
-  const state = chartStates.get(chart);
-  const elements = state.elements.filter(el => !el.skip && el.options.display);
-
-  Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["clipArea"])(ctx, chartArea);
-  elements.forEach(el => {
-    if (el.options.drawTime === caller) {
-      el.draw(ctx);
-    }
-  });
-  Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["unclipArea"])(ctx);
-
-  elements.forEach(el => {
-    if ('drawLabel' in el && el.options.label && (el.options.label.drawTime || el.options.drawTime) === caller) {
-      el.drawLabel(ctx, chartArea);
-    }
-  });
-}
-
-function adjustScaleRange(chart, scale, annotations) {
-  const range = getScaleLimits(scale, annotations);
-  let changed = false;
-  if (Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isFinite"])(range.min) &&
-		typeof scale.options.min === 'undefined' &&
-		typeof scale.options.suggestedMin === 'undefined') {
-    changed = scale.min !== range.min;
-    scale.min = range.min;
-  }
-  if (Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["isFinite"])(range.max) &&
-		typeof scale.options.max === 'undefined' &&
-		typeof scale.options.suggestedMax === 'undefined') {
-    changed = scale.max !== range.max;
-    scale.max = range.max;
-  }
-  if (changed && typeof scale.handleTickRangeOptions === 'function') {
-    scale.handleTickRangeOptions();
-  }
-}
-
-function getScaleLimits(scale, annotations) {
-  const axis = scale.axis;
-  const scaleID = scale.id;
-  const scaleIDOption = axis + 'ScaleID';
-  let min = Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["valueOrDefault"])(scale.min, Number.NEGATIVE_INFINITY);
-  let max = Object(chart_js_helpers__WEBPACK_IMPORTED_MODULE_1__["valueOrDefault"])(scale.max, Number.POSITIVE_INFINITY);
-  for (const annotation of annotations) {
-    if (annotation.scaleID === scaleID) {
-      for (const prop of ['value', 'endValue']) {
-        const raw = annotation[prop];
-        if (raw) {
-          const value = scale.parse(raw);
-          min = Math.min(min, value);
-          max = Math.max(max, value);
-        }
-      }
-    } else if (annotation[scaleIDOption] === scaleID) {
-      for (const prop of [axis + 'Min', axis + 'Max', axis + 'Value']) {
-        const raw = annotation[prop];
-        if (raw) {
-          const value = scale.parse(raw);
-          min = Math.min(min, value);
-          max = Math.max(max, value);
-        }
-      }
-    }
-  }
-  return {min, max};
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (annotation);
+!function(e,t){ true?module.exports=t(__webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/chart.esm.js"),__webpack_require__(/*! chart.js/helpers */ "./node_modules/chart.js/helpers/helpers.esm.js")):undefined}(this,(function(e,t){"use strict";const n=["click","dblclick"],o=["enter","leave"],i=n.concat(o);function a(e,t,n,o){if(t.listened)switch(n.type){case"mousemove":case"mouseout":!function(e,t,n){if(!t.moveListened)return;let o;"mousemove"===n.type&&(o=r(t.elements,n));const i=t.hovered;t.hovered=o,function(e,t,n,o){n&&n!==o&&s(e,t,n.options.leave||t.listeners.leave,n);o&&o!==n&&s(e,t,o.options.enter||t.listeners.enter,o)}(e,t,i,o)}(e,t,n);break;case"click":!function(e,t,n,o){const i=t.listeners,a=r(t.elements,n);if(a){const n=a.options,r=n.dblclick||i.dblclick,l=n.click||i.click;a.clickTimeout?(clearTimeout(a.clickTimeout),delete a.clickTimeout,s(e,t,r,a)):r?a.clickTimeout=setTimeout((()=>{delete a.clickTimeout,s(e,t,l,a)}),o.dblClickSpeed):s(e,t,l,a)}}(e,t,n,o)}}function s(e,n,o,i){t.callback(o,[{chart:e,element:i}])}function r(e,n){let o=Number.POSITIVE_INFINITY;return e.filter((e=>e.options.display&&e.inRange(n.x,n.y))).reduce(((e,i)=>{const a=i.getCenterPoint(),s=t.distanceBetweenPoints(n,a);return s<o?(e=[i],o=s):s===o&&e.push(i),e}),[]).sort(((e,t)=>e._index-t._index)).slice(0,1)[0]}const l=Math.PI,d=l/2;function c(e,n,o){return n="number"==typeof n?n:e.parse(n),t.isFinite(n)?e.getPixelForValue(n):o}function h(e,t,n,o,i,a){if(e.beginPath(),a){const s=Math.min(a,i/2,o/2),r=t+s,c=n+s,h=t+o-s,f=n+i-s;e.moveTo(t,c),r<h&&c<f?(e.arc(r,c,s,-l,-d),e.arc(h,c,s,-d,0),e.arc(h,f,s,0,d),e.arc(r,f,s,d,l)):r<h?(e.moveTo(r,n),e.arc(h,c,s,-d,d),e.arc(r,c,s,d,l+d)):c<f?(e.arc(r,c,s,-l,0),e.arc(r,f,s,0,l)):e.arc(r,c,s,-l,l),e.closePath(),e.moveTo(t,n)}else e.rect(t,n,o,i)}class f extends e.Element{inRange(e,t,n){const{x:o,y:i,width:a,height:s}=this.getProps(["x","y","width","height"],n);return e>=o&&e<=o+a&&t>=i&&t<=i+s}getCenterPoint(e){const{x:t,y:n,width:o,height:i}=this.getProps(["x","y","width","height"],e);return{x:t+o/2,y:n+i/2}}draw(e){const{x:t,y:n,width:o,height:i,options:a}=this;e.save(),e.lineWidth=a.borderWidth,e.strokeStyle=a.borderColor,e.fillStyle=a.backgroundColor,e.setLineDash(a.borderDash),e.lineDashOffset=a.borderDashOffset,h(e,t,n,o,i,a.cornerRadius),e.fill(),a.borderWidth&&e.stroke(),e.restore()}resolveElementProperties(e,t){const n=e.scales[t.xScaleID],o=e.scales[t.yScaleID];let i,a,{top:s,left:r,bottom:l,right:d}=e.chartArea;return n||o?(n&&(i=c(n,t.xMin,r),a=c(n,t.xMax,d),r=Math.min(i,a),d=Math.max(i,a)),o&&(i=c(o,t.yMin,l),a=c(o,t.yMax,s),s=Math.min(i,a),l=Math.max(i,a)),{x:r,y:s,x2:d,y2:l,width:d-r,height:l-s}):{options:{}}}}f.id="boxAnnotation",f.defaults={display:!0,adjustScaleRange:!0,borderDash:[],borderDashOffset:0,borderWidth:1,cornerRadius:0,xScaleID:"x",xMin:void 0,xMax:void 0,yScaleID:"y",yMin:void 0,yMax:void 0},f.defaultRoutes={borderColor:"color",backgroundColor:"color"};const u=Math.PI,x=(e,t,n)=>({x:e.x+n*(t.x-e.x),y:e.y+n*(t.y-e.y)}),y=(e,t,n)=>x(t,n,Math.abs((e-t.y)/(n.y-t.y))).x,b=(e,t,n)=>x(t,n,Math.abs((e-t.x)/(n.x-t.x))).y;function g({x:e,y:t},n,{top:o,right:i,bottom:a,left:s}){return e<s&&(t=n.x<s?NaN:b(s,{x:e,y:t},n),e=s),e>i&&(t=n.x>i?NaN:b(i,{x:e,y:t},n),e=i),t<o&&(e=n.y<o?NaN:y(o,{x:e,y:t},n),t=o),t>a&&(e=n.y>a?NaN:y(a,{x:e,y:t},n),t=a),{x:e,y:t}}class p extends e.Element{intersects(e,t,n=.001){const o=e=>e*e,{x:i,y:a,x2:s,y2:r}=this,l=s-i,d=r-a,c=o(l)+o(d),h=0===c?-1:((e-i)*l+(t-a)*d)/c;let f,u;return h<0?(f=i,u=a):h>1?(f=s,u=r):(f=i+h*l,u=a+h*d),o(e-f)+o(t-u)<n}labelIsVisible(){const e=this.options.label;return e&&e.enabled&&e.content}isOnLabel(e,t){const{labelRect:n}=this;if(!n||!this.labelIsVisible())return!1;const{x:o,y:i}=(a={x:e,y:t},s=n,r=-n.rotation,l=Math.cos(r),d=Math.sin(r),c=s.x,h=s.y,{x:c+l*(a.x-c)-d*(a.y-h),y:h+d*(a.x-c)+l*(a.y-h)});var a,s,r,l,d,c,h;const f=n.width/2,u=n.height/2;return o>=n.x-f&&o<=n.x+f&&i>=n.y-u&&i<=n.y+u}inRange(e,t){const n=this.options.borderWidth||1;return this.intersects(e,t,n)||this.isOnLabel(e,t)}getCenterPoint(){return{x:(this.x2+this.x)/2,y:(this.y2+this.y)/2}}draw(e){const{x:t,y:n,x2:o,y2:i,options:a}=this;e.save(),e.lineWidth=a.borderWidth,e.strokeStyle=a.borderColor,e.setLineDash(a.borderDash),e.lineDashOffset=a.borderDashOffset,e.beginPath(),e.moveTo(t,n),e.lineTo(o,i),e.stroke(),e.restore()}drawLabel(e,n){this.labelIsVisible()&&(e.save(),function(e,n,o){const i=n.options.label;e.font=t.toFontString(i.font);const{width:a,height:s}=function(e,n){const o=n.content;if(o instanceof Image)return{width:m(o.width,n.width)+2*n.xPadding,height:m(o.height,n.height)+2*n.yPadding};const i=t.isArray(o)?o:[o],a=i.length;let s=0;for(let t=0;t<a;t++){const n=i[t];M.has(n)||M.set(n,e.measureText(n).width),s=Math.max(s,M.get(n))}return s+=2*n.xPadding,{width:s,height:a*n.font.size+(a+1)*n.yPadding}}(e,i),r=n.labelRect=function(e,n,o,i){const a=e.options.label,{xAdjust:s,yAdjust:r,xPadding:l,yPadding:d,position:c}=a,h={x:e.x,y:e.y},f={x:e.x2,y:e.y2},y="auto"===a.rotation?function(e){const{x:t,y:n,x2:o,y2:i}=e,a=Math.atan2(i-n,o-t);return a>u/2?a-u:a<u/-2?a+u:a}(e):t.toRadians(a.rotation),b=function(e,t,n){const o=Math.cos(n),i=Math.sin(n);return{w:Math.abs(e*o)+Math.abs(t*i),h:Math.abs(e*i)+Math.abs(t*o)}}(n,o,y),g=function(e,t,n,o){let i=.5;const a=function(e,t){const{x:n,x2:o,y:i,y2:a}=e,s=Math.min(i,a)-t.top,r=Math.min(n,o)-t.left,l=t.bottom-Math.max(i,a),d=t.right-Math.max(n,o);return{x:Math.min(r,d),y:Math.min(s,l),dx:r<d?1:-1,dy:s<l?1:-1}}(e,o),s=e.options.label;"start"===t?i=w({w:e.x2-e.x,h:e.y2-e.y},n,s,a):"end"===t&&(i=1-w({w:e.x-e.x2,h:e.y-e.y2},n,s,a));return i}(e,c,b,i),p=x(h,f,g),m={size:b.w,min:i.left,max:i.right,padding:l},M={size:b.h,min:i.top,max:i.bottom,padding:d};return{x:v(p.x,m)+s,y:v(p.y,M)+r,width:n,height:o,rotation:y}}(n,a,s,o);if(e.translate(r.x,r.y),e.rotate(r.rotation),e.fillStyle=i.backgroundColor,h(e,-a/2,-s/2,a,s,i.cornerRadius),e.fill(),e.fillStyle=i.color,t.isArray(i.content)){e.textAlign=i.textAlign;const t=function(e,t){const{textAlign:n,xPadding:o}=e;if("start"===n)return-t/2+o;if("end"===n)return+t/2-o;return 0}(i,a);let n=-s/2+i.yPadding;for(let o=0;o<i.content.length;o++)e.textBaseline="top",e.fillText(i.content[o],t,n),n+=i.font.size+i.yPadding}else if(i.content instanceof Image){const t=-a/2+i.xPadding,n=-s/2+i.yPadding;e.drawImage(i.content,t,n,a-2*i.xPadding,s-2*i.yPadding)}else e.textAlign="center",e.textBaseline="middle",e.fillText(i.content,0,0)}(e,this,n),e.restore())}resolveElementProperties(e,t){const n=e.scales[t.scaleID];let o,i,{top:a,left:s,bottom:r,right:l}=e.chartArea;if(n)o=c(n,t.value,NaN),i=c(n,t.endValue,o),n.isHorizontal()?(s=o,l=i):(a=o,r=i);else{const n=e.scales[t.xScaleID],o=e.scales[t.yScaleID];n&&(s=c(n,t.xMin,s),l=c(n,t.xMax,l)),o&&(a=c(o,t.yMin,a),r=c(o,t.yMax,r))}return function(e,t,n){const{x:o,y:i}=g(e,t,n),{x:a,y:s}=g(t,e,n);return{x:o,y:i,x2:a,y2:s,width:Math.abs(a-o),height:Math.abs(s-i)}}({x:s,y:a},{x:l,y:r},e.chartArea)}}function m(e,t){return"number"==typeof t?t:"string"==typeof t?("string"==typeof(n=t)&&n.endsWith("%")&&parseFloat(n)/100)*e:e;var n}p.id="lineAnnotation",p.defaults={display:!0,adjustScaleRange:!0,borderWidth:2,borderDash:[],borderDashOffset:0,label:{backgroundColor:"rgba(0,0,0,0.8)",drawTime:void 0,font:{family:void 0,lineHeight:void 0,size:void 0,style:"bold",weight:void 0},color:"#fff",xPadding:6,yPadding:6,rotation:0,cornerRadius:6,position:"center",xAdjust:0,yAdjust:0,textAlign:"center",enabled:!1,content:null},value:void 0,endValue:void 0,scaleID:void 0,xScaleID:"x",xMin:void 0,xMax:void 0,yScaleID:"y",yMin:void 0,yMax:void 0},p.defaultRoutes={borderColor:"color"};const M=new Map;function w(e,t,n,o){const{xPadding:i,yPadding:a}=n,s=e.w*o.dx,r=e.h*o.dy,l=s>0&&(t.w/2+i-o.x)/s,d=r>0&&(t.h/2+a-o.y)/r;return((e,t,n)=>Math.min(n,Math.max(t,e)))(Math.max(l,d),0,.25)}function v(e,t){const{size:n,min:o,max:i,padding:a}=t,s=n/2;return n>i-o?(i+o)/2:(o>=e-a-s&&(e=o+a+s),i<=e+a+s&&(e=i-a-s),e)}class D extends f{inRange(e,t){return function(e,t){const{width:n,height:o}=t,i=t.getCenterPoint(!0),a=n/2,s=o/2;if(a<=0||s<=0)return!1;return Math.pow(e.x-i.x,2)/Math.pow(a,2)+Math.pow(e.y-i.y,2)/Math.pow(s,2)<=1}({x:e,y:t},this)}draw(e){const{width:t,height:n,options:o}=this,i=this.getCenterPoint();e.save(),e.beginPath(),e.lineWidth=o.borderWidth,e.strokeStyle=o.borderColor,e.fillStyle=o.backgroundColor,e.setLineDash(o.borderDash),e.lineDashOffset=o.borderDashOffset,e.ellipse(i.x,i.y,n/2,t/2,Math.PI/2,0,2*Math.PI),e.fill(),e.stroke(),e.restore()}}D.id="ellipseAnnotation",D.defaults={display:!0,adjustScaleRange:!0,borderDash:[],borderDashOffset:0,borderWidth:1,xScaleID:"x",xMin:void 0,xMax:void 0,yScaleID:"y",yMin:void 0,yMax:void 0},D.defaultRoutes={borderColor:"color",backgroundColor:"color"};class P extends e.Element{inRange(e,t){const{width:n,options:o}=this,i=this.getCenterPoint(!0),a=n/2+o.borderWidth;return!(a<=0)&&Math.pow(e-i.x,2)+Math.pow(t-i.y,2)<=Math.pow(a,2)}getCenterPoint(e){const{x:t,y:n}=this.getProps(["x","y"],e);return{x:t,y:n}}draw(e){const{x:t,y:n,width:o,options:i}=this;e.save(),e.lineWidth=i.borderWidth,e.strokeStyle=i.borderColor,e.fillStyle=i.backgroundColor,e.setLineDash(i.borderDash),e.lineDashOffset=i.borderDashOffset,e.beginPath(),e.arc(t,n,o/2,0,2*Math.PI),e.fill(),e.stroke(),e.restore()}resolveElementProperties(e,t){const{chartArea:n,scales:o}=e,i=o[t.xScaleID],a=o[t.yScaleID];let s=n.width/2,r=n.height/2;return i&&(s=c(i,t.xValue,s)),a&&(r=c(a,t.yValue,r)),{x:s,y:r,width:2*t.radius,height:2*t.radius}}}P.id="pointAnnotation",P.defaults={display:!0,adjustScaleRange:!0,borderDash:[],borderDashOffset:0,borderWidth:1,radius:10,xScaleID:"x",xValue:void 0,yScaleID:"y",yValue:void 0},P.defaultRoutes={borderColor:"color",backgroundColor:"color"};const I=new Map,k={box:f,line:p,ellipse:D,point:P};Object.keys(k).forEach((t=>{e.defaults.describe(`elements.${k[t].id}`,{_fallback:"plugins.annotation"})}));var S={id:"annotation",version:"1.0.2",afterRegister(){e.Chart.register(k)},afterUnregister(){e.Chart.unregister(k)},beforeInit(e){I.set(e,{annotations:[],elements:[],listeners:{},listened:!1,moveListened:!1})},beforeUpdate(e,n,o){const i=I.get(e).annotations=[];let a=o.annotations;t.isObject(a)?Object.keys(a).forEach((e=>{const n=a[e];t.isObject(n)&&(n.id=e,i.push(n))})):t.isArray(a)&&i.push(...a)},afterDataLimits(e,n){const o=I.get(e);!function(e,n,o){const i=function(e,n){const o=e.axis,i=e.id,a=o+"ScaleID";let s=t.valueOrDefault(e.min,Number.NEGATIVE_INFINITY),r=t.valueOrDefault(e.max,Number.POSITIVE_INFINITY);for(const t of n)if(t.scaleID===i)for(const n of["value","endValue"]){const o=t[n];if(o){const t=e.parse(o);s=Math.min(s,t),r=Math.max(r,t)}}else if(t[a]===i)for(const n of[o+"Min",o+"Max",o+"Value"]){const o=t[n];if(o){const t=e.parse(o);s=Math.min(s,t),r=Math.max(r,t)}}return{min:s,max:r}}(n,o);let a=!1;t.isFinite(i.min)&&void 0===n.options.min&&void 0===n.options.suggestedMin&&(a=n.min!==i.min,n.min=i.min);t.isFinite(i.max)&&void 0===n.options.max&&void 0===n.options.suggestedMax&&(a=n.max!==i.max,n.max=i.max);a&&"function"==typeof n.handleTickRangeOptions&&n.handleTickRangeOptions()}(0,n.scale,o.annotations.filter((e=>e.display&&e.adjustScaleRange)))},afterUpdate(t,a,s){const r=I.get(t);!function(e,t,a){const s=t.annotations||[];t.listened=!1,t.moveListened=!1,i.forEach((e=>{"function"==typeof a[e]&&(t.listened=!0,t.listeners[e]=a[e])})),o.forEach((e=>{"function"==typeof a[e]&&(t.moveListened=!0)})),t.listened&&t.moveListened||s.forEach((e=>{t.listened||n.forEach((n=>{"function"==typeof e[n]&&(t.listened=!0)})),t.moveListened||o.forEach((n=>{"function"==typeof e[n]&&(t.listened=!0,t.moveListened=!0)}))}))}(0,r,s),function(t,n,o,i){const a=function(t,n,o){if("reset"===o||"none"===o||"resize"===o)return T;return new e.Animations(t,n)}(t,o.animations,i),s=n.annotations,r=function(e,t){const n=t.length,o=e.length;if(o<n){const t=n-o;e.splice(o,0,...new Array(t))}else o>n&&e.splice(n,o-n);return e}(n.elements,s);for(let e=0;e<s.length;e++){const n=s[e];let o=r[e];const i=k[n.type]||k.line;o&&o instanceof i||(o=r[e]=new i);const l=C(n.setContext(A(t,o,n))),d=o.resolveElementProperties(t,l);d.skip=isNaN(d.x)||isNaN(d.y),d.options=l,a.update(o,d)}}(t,r,s,a.mode)},beforeDatasetsDraw(e){j(e,"beforeDatasetsDraw")},afterDatasetsDraw(e){j(e,"afterDatasetsDraw")},beforeDraw(e){j(e,"beforeDraw")},afterDraw(e){j(e,"afterDraw")},beforeEvent(e,t,n){a(e,I.get(e),t.event,n)},destroy(e){I.delete(e)},_getState:e=>I.get(e),defaults:{drawTime:"afterDatasetsDraw",dblClickSpeed:350,animations:{numbers:{properties:["x","y","x2","y2","width","height"],type:"number"}},label:{drawTime:null}},descriptors:{_indexable:!1,_scriptable:e=>!i.includes(e),annotations:{_allKeys:!1,_fallback:(e,t)=>`elements.${k[t.type||"line"].id}`}},additionalOptionScopes:[""]};const T={update:Object.assign};function C(e){const t=k[e.type]||k.line,n={};n.id=e.id,n.type=e.type,n.drawTime=e.drawTime,Object.assign(n,O(e,t.defaults),O(e,t.defaultRoutes));for(const t of i)n[t]=e[t];return n}function O(e,n){const o={};for(const i of Object.keys(n)){const a=n[i],s=e[i];o[i]=t.isObject(a)?O(s,a):s}return o}function A(e,t,n){return t.$context||(t.$context=Object.assign(Object.create(e.getContext()),{element:t,id:n.id,type:"annotation"}))}function j(e,n){const{ctx:o,chartArea:i}=e,a=I.get(e).elements.filter((e=>!e.skip&&e.options.display));t.clipArea(o,i),a.forEach((e=>{e.options.drawTime===n&&e.draw(o)})),t.unclipArea(o),a.forEach((e=>{"drawLabel"in e&&e.options.label&&(e.options.label.drawTime||e.options.drawTime)===n&&e.drawLabel(o,i)}))}return e.Chart.register(S),S}));
 
 
 /***/ }),
@@ -64869,7 +63823,7 @@ module.exports = function(module) {
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Chart = __webpack_require__(/*! chart.js/dist/chart.js */ "./node_modules/chart.js/dist/chart.js");
-window.annotationPlugin = __webpack_require__(/*! chartjs-plugin-annotation */ "./node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.esm.js");
+window.annotationPlugin = __webpack_require__(/*! chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js */ "./node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js");
 
 /***/ }),
 
@@ -64936,8 +63890,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\Dev\fujita\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\Dev\fujita\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\perso\fujita\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\perso\fujita\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

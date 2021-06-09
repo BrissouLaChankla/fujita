@@ -51,13 +51,18 @@ class TeamgameController extends Controller
                 var_dump("match de team");
               } else {
                 $this->storeTeamGame($game, $team);
-                
+                $this->storeMatesGame($game, $team);
                 echo count($isItTeam). " joueurs de la team présent dans cette game<br>";
               }
           }
   }
   
+  
+  // Rentre dans cette fonction que si c'est une game qu'on a envie de récup
+  
   public function storeTeamGame($game, $team) {
+    
+    // _________________________ STORE LA GAME _______________________________
     
     foreach ($game->participantIdentities as $participantIdent) {
       if ($participantIdent->player->accountId == "5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw") {
@@ -87,7 +92,39 @@ class TeamgameController extends Controller
       'duree' => $game->gameDuration,
       'victory' => $victory, 
       ]);
+  }
   
+  public function storeMatesGame($game, $team) {
+        // _________________________ STORE LES STATS DES MEMBRES _______________________________
+    
+        foreach ($game->participantIdentities as $participantIdent) {
+          if (in_array($participantIdent->player->accountId, json_decode($team))) {
+            // dd($game);
+              foreach ($game->participants as $participant) {
+                if($participantIdent->getData()['participantId'] == $participant->participantId) {
+                  $teamgame_id = TeamGame::where('game_id', $game->gameId)->first()->id;
+                  $lol_id = Lol::where('id_sum', $participantIdent->player->accountId)->first()->id;
+                  // dd($participant->stats);
+                  
+                  $teamgame_lol = TeamGame_Lol::firstOrCreate([
+                    'teamgame_id' => $teamgame_id,
+                    'lol_id' => $lol_id,
+                    'golds' => $participant->stats->goldEarned,
+                    'damages' => $participant->stats->totalDamageDealtToChampions,
+                    'champion' => $participant->championId,
+                    'position' => $participant->timeline->lane,
+                    'kills' => $participant->stats->kills,
+                    'deaths' => $participant->stats->deaths,
+                    'assists' => $participant->stats->assists,
+                    'largestmultikill' => $participant->stats->largestMultiKill,
+                    'wardsplaced' => $participant->stats->visionScore,
+                    'cs' => ($participant->stats->totalMinionsKilled + $participant->stats->neutralMinionsKilled),
+                  ]);
+                }
+              }
+          }
+        }
+        
   }
 }
 

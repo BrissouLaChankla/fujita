@@ -22,4 +22,5 @@ class TeamGame_Lol extends Model
         'wardsplaced',
         'cs',
     ];
+
 }

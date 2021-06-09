@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Lol;
 use App\Models\Mmr;
+use App\Models\TeamGame;
+use App\Models\TeamGame_Lol;
 
 class TeamController extends Controller
 {
@@ -62,8 +64,13 @@ class TeamController extends Controller
             $days[] = $mmr->date_moment->format('d/m');
         }
 
+
+        $allgames = TeamGame::all();
+        $champions = json_decode(file_get_contents("http://ddragon.leagueoflegends.com/cdn/11.12.1/data/fr_FR/champion.json"), true);
         return view('team')->with([
+            'champions' => $champions,
             'lols'=> $lols,
+            'allgames' => $allgames,
             'days'=> json_encode($days),
             'BriceSoloQ' => json_encode($BriceSoloQ),
             'BriceFlexQ' => json_encode($BriceFlexQ),

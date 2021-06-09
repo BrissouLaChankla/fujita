@@ -29,9 +29,7 @@
                     <h3 class="player-label">Niveau</h3>
                     <h4 class="player-value">
                         {{$summoner->summonerLevel}}
-
-                      
-                        </h4>
+                    </h4>
                 </div>
                 <div class="col-md-6">
                     <h3 class="player-label">FlexQ Stat</h3>
@@ -39,6 +37,14 @@
                     <img src="{{asset('emblems/Emblem_'.$flexStat->tier.'.png')}}" style="width:65px" alt="">
                     {{$flexStat->tier}}
                     {{$flexStat->rank}}
+                    <hr>
+                    <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Elo flexQ</div>
+                        <div class="card-body">
+                            <canvas id="chartFlexQ"></canvas>
+                        </div>
+                    </div>
+                    
                 </div>
                 <div class="col-md-6">
                     <h3 class="player-label">SoloQ Stat</h3>
@@ -46,7 +52,14 @@
                     <img src="{{asset('emblems/Emblem_'.$soloStat->tier.'.png')}}" style="width:65px" alt="">
                     {{$soloStat->tier}}
                     {{$soloStat->rank}}
-                
+                    <hr>
+                    <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Elo soloQ</div>
+                        <div class="card-body">
+                            <canvas id="chartSoloQ"></canvas>
+                        </div>
+                    </div>
+                 
                 </div>
             </div>
         </div>
@@ -56,8 +69,75 @@
     </div>
 </div>
 
+    <script>
+            var ctx = document.getElementById('chartSoloQ').getContext('2d');
+            var ctx2 = document.getElementById('chartFlexQ').getContext('2d');
+        
+        
+            var chartSoloQ = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {!! $days !!},
+                datasets: [{
+                    tension: 0.3,
+                    data: {!! $allSoloStats !!},
+                    borderColor: "orange",
+                    backgroundColor : "orange"
+                }]
 
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false,
+                        
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest',
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+        
+        var chartFlexQ = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: {!! $days !!},
+                datasets: [{
+                    tension: 0.3,
+                    data: {!! $allFlexStats !!},
+                    borderColor: "orange",
+                    backgroundColor : "orange"
+                }]
 
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false,
+                        
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest',
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+        
+        
+    </script>
     
 
     {{-- @foreach ($stats as $stat)

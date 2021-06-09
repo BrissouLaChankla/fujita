@@ -37,13 +37,26 @@ class PlayerController extends Controller
 
         $ddragonversion = json_decode(file_get_contents("https://ddragon.leagueoflegends.com/api/versions.json"), true);
         
+        $days = [];
+        $allSoloStats = [];
+        $allFlexStats = [];
+        
+        foreach ($player->lol->mmrs as $mmr) {
+            $days[] = $mmr->date_moment->format('d/m');
+            $allSoloStats[] = $mmr->mmr_soloq;
+            $allFlexStats[] = $mmr->mmr_flexq;
+        }
+        
         
         return view('player')->with([
             'player' => $player,
+            'days' => json_encode($days),
             'ddragonversion' => $ddragonversion[0],
             'summoner' => $summoner,
             'flexStat' => $flexStat,
-            'soloStat' => $soloStat
+            'soloStat' => $soloStat,
+            'allSoloStats' => json_encode($allSoloStats),
+            'allFlexStats' => json_encode($allFlexStats)
         ]);
     }
 

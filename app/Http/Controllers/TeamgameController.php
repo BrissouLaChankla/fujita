@@ -21,7 +21,7 @@ class TeamgameController extends Controller
           // 
           $team = Lol::all()->pluck('id_sum');
 
-          $isItTeam = array();
+          $isItTeam =[];
 
 
           // Me sélectionne
@@ -58,21 +58,41 @@ class TeamgameController extends Controller
   }
   
   public function storeTeamGame($game, $team) {
-    // dd($game);
-    foreach ($game->participants as $participant) {
-      dd($participant);
+    
+    foreach ($game->participantIdentities as $participantIdent) {
+      if ($participantIdent->player->accountId == "5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw") {
+        $myId = $participantIdent->getData()['participantId'];
+      }
     }
-    // 5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw
-    foreach($team as $member) {
-      dd($member);
+    
+    foreach ($game->participants as $participant) {
+      if($participant->participantId == $myId) {
+        $myTeamId = $participant->teamId;
+      }
+    }
+    
+    foreach ($game->teams as $team) {
+      if ($team->teamId == $myTeamId) {
+        if ($team->win == "Win") {
+          $victory = 1;
+        } else {
+          $victory = 0;
+        }
+      }
     }
 
     $teamGame = TeamGame::firstOrCreate(
       ['game_id'=> $game->gameId],
       [
       'duree' => $game->gameDuration,
-      'victory' => $allMMR[1], 
+      'victory' => $victory, 
       ]);
   
   }
 }
+
+// 0 => "5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw"
+// 1 => "9V3ycnI7NJeGP7br32LVwHK8dQy9txxvJrDKLPk5PyBg0g"
+// 2 => "u3fnh3y5o9MUFzb4fjDyeo18-pcic9e8WiQ8Nf2gmpmRIps"
+// 3 => "XQUFRYb6ZGb0avres5YYkmHJrpmhdO4P9Isgm7WUxpRxiQA"
+// 4 => "wtX33Vp4mUIiVuJQ7khu_hDBGPOJDcUkORzIxEujHadO0VI"

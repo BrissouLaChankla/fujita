@@ -34,7 +34,7 @@
                 <div class="col-md-6">
                     <h3 class="player-label">FlexQ Stat</h3>
                     <h4 class="player-value"><span class="text-success">{{$flexStat->wins}}</span>/<span class="text-danger">{{$flexStat->losses}}</span> | {{number_format((float)($flexStat->wins / ($flexStat->wins + $flexStat->losses)*100), 2, '.', '')}}%</h4>
-                    <img src="{{asset('emblems/Emblem_'.$flexStat->tier.'.png')}}" style="width:65px" alt="">
+                    <img src="{{asset('/emblems/Emblem_'.$flexStat->tier.'.png')}}" style="width:65px" alt="">
                     {{$flexStat->tier}}
                     {{$flexStat->rank}}
                     <hr>
@@ -49,7 +49,7 @@
                 <div class="col-md-6">
                     <h3 class="player-label">SoloQ Stat</h3>
                     <h4 class="player-value"><span class="text-success">{{$soloStat->wins}}</span>/<span class="text-danger">{{$soloStat->losses}}</span> | {{number_format((float)($soloStat->wins / ($soloStat->wins + $soloStat->losses)*100), 2, '.', '')}}%</h4>
-                    <img src="{{asset('emblems/Emblem_'.$soloStat->tier.'.png')}}" style="width:65px" alt="">
+                    <img src="{{asset('/emblems/Emblem_'.$soloStat->tier.'.png')}}" style="width:65px" alt="">
                     {{$soloStat->tier}}
                     {{$soloStat->rank}}
                     <hr>

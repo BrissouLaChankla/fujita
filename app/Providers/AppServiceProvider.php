@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
             View::share('view_name', $view->getName());
         });
     }
-    
+     
     
     /**
      * Bootstrap any application services.
@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::share ( 'players', Player::all());
-        View::share ('apikey', 'RGAPI-b7144ae0-c814-4cbb-9d6c-d2de11c26f12');
+        View::share ('apikey', 'RGAPI-82bd91a4-5410-40b2-b51b-570b064a3350');
         //
     }
 }

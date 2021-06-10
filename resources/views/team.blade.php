@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
+{{$chartdamages}}
     <div class="container bg-light">
         <div class="row">
             <div class="col-md-6">
@@ -21,7 +21,9 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="container-fluid bg-light p-md-5">
+        
         @foreach ($allgames as $key=>$game)
         <h2 class="text-center mt-3 text-uppercase">
             @if ($game->victory == 1)
@@ -30,14 +32,14 @@
                 <strong class="text-danger"> Défaite </strong>
             @endif
         </h2>
-        <div class="row">
+        <div class="row align-items-center">
             <div class="col-2">
                 <img src="{{asset('mvp/brice.jpg')}}" class="img-fluid" alt="MVP">
             </div>
             <div class="col-8">
                 <ul>
                     @foreach ($game->lols as $lol)
-                    <div class="d-flex">
+                    <div class="d-flex my-2 align-items-center justify-content-between">
                         <div>
                             @foreach ($champions["data"] as $champ)
                                 @switch($champ["key"])
@@ -67,7 +69,7 @@
                             <strong class="text-danger">
                                 {{$lol->pivot->deaths}}              
                             </strong> / 
-                            <strong class="text-warning">
+                            <strong>
                                 {{$lol->pivot->assists}}                
                             </strong>
                         </div>
@@ -82,14 +84,55 @@
                     @endforeach
                 </ul>
             </div>
+            <div class="col-2">
+                <canvas id="chartDamages_{{$game->id}}" data-id="{{$game->id}}" data-bricedamage="{{$game->lols[0]->pivot->damages}}"></canvas>
+            </div>
         </div>
     
     @endforeach
-
     </div>
     <script>
         var ctx = document.getElementById('chartSoloQ').getContext('2d');
         var ctx2 = document.getElementById('chartFlexQ').getContext('2d');
+        var ctx3 = $('*[id^="chartDamages_"]');
+        var damages = @json($chartdamages);
+        console.log(damages["Partie_1"]);
+        
+        ctx3.each(function (key, element) {
+            var id = $(element).data('id');
+            // console.log(damages[key]);
+            document["chartDamages_" + id] = new Chart(element, {
+                type: 'bar',
+                data: {
+                    labels: {!! $lols->pluck('pseudo') !!},
+                    datasets: [{
+                        label: "Dégats",
+                        data: [5,10],
+                        borderColor: "orange",
+                        backgroundColor : "orange"
+                    }]
+
+                },
+                options: {
+                    indexAxis: 'y',
+                    elements: {
+                        bar: {
+                            borderWidth: 2,
+                        }
+                    },
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'left',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        })
+        
 
         var chartSoloQ = new Chart(ctx, {
             type: 'line',

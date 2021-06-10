@@ -60,24 +60,20 @@ class TeamController extends Controller
 
 
         $days = array();
-        foreach ($lols[0]->mmrs as $mmr) {
-            $days[] = $mmr->date_moment->format('d/m');
-        }
+      
         
         
         
         $allgames = TeamGame::all();
         $chartdamages = [];
-        
-        foreach ($allgames as $game) {
-            foreach($game->lols as $lol) {
-                $chartdamages[
-                    $game->id[
-                        'Caca ' => 'pipi'
-                    ];
-                ];
-            }  
-        }
+    
+        // foreach ($allgames as $game) {
+        //     foreach($game->lols as $lol) {
+        //         $chartdamages[
+              
+        //         ];
+        //     }  
+        // }
         
         
         $champions = json_decode(file_get_contents("http://ddragon.leagueoflegends.com/cdn/11.12.1/data/fr_FR/champion.json"), true);

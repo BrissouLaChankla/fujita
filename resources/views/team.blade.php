@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-{{$chartdamages}}
     <div class="container bg-light">
         <div class="row">
             <div class="col-md-6">
@@ -95,8 +94,6 @@
         var ctx = document.getElementById('chartSoloQ').getContext('2d');
         var ctx2 = document.getElementById('chartFlexQ').getContext('2d');
         var ctx3 = $('*[id^="chartDamages_"]');
-        var damages = @json($chartdamages);
-        console.log(damages["Partie_1"]);
         
         ctx3.each(function (key, element) {
             var id = $(element).data('id');

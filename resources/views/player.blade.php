@@ -37,6 +37,7 @@
                     <img src="{{asset('/emblems/Emblem_'.ucfirst(strtolower($flexStat->tier)).'.png')}}" style="width:65px" alt="">
                     {{$flexStat->tier}}
                     {{$flexStat->rank}}
+                    {{$flexStat->leaguePoints}} lp
                     <hr>
                     <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
                         <div class="card-header">Elo flexQ</div>
@@ -52,6 +53,8 @@
                     <img src="{{asset('/emblems/Emblem_'.ucfirst(strtolower($soloStat->tier)).'.png')}}" style="width:65px" alt="">
                     {{$soloStat->tier}}
                     {{$soloStat->rank}}
+                    {{$soloStat->leaguePoints}} lp
+
                     <hr>
                     <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
                         <div class="card-header">Elo soloQ</div>

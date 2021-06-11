@@ -6,8 +6,9 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" href="{{asset('favicon.png')}}" />
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Uraken Fujita - Team Esport sur League of Legends</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>

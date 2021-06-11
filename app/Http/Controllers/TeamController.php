@@ -15,7 +15,8 @@ class TeamController extends Controller
 
         $lols = Lol::all();
         $mmrs = Mmr::all();
-
+        $allgames = TeamGame::all();
+        
 
         $BriceSoloQ = array();
         $BriceFlexQ = array();
@@ -58,15 +59,21 @@ class TeamController extends Controller
                 };
             }
 
+            $me = Lol::find(1); 
+            $days = array();
 
-        $days = array();
+
+            foreach($me->mmrs as $mmr) {
+                $days[] = $mmr->date_moment->format('d/m'); 
+            }
       
         
         
         
-        $allgames = TeamGame::all();
         $chartdamages = [];
     
+        $winlose = [$allgames->where('victory', 1)->count(),$allgames->where('victory', 0)->count()];
+
         // foreach ($allgames as $game) {
         //     foreach($game->lols as $lol) {
         //         $chartdamages[
@@ -81,6 +88,7 @@ class TeamController extends Controller
             'chartdamages' => $chartdamages,
             'champions' => $champions,
             'lols'=> $lols,
+            'winlose'=>$winlose,
             'allgames' => $allgames,
             'days'=> json_encode($days),
             'BriceSoloQ' => json_encode($BriceSoloQ),

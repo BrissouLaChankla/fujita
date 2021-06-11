@@ -47,3 +47,20 @@ body {
 .golds {
     color:orange;
 }
+.medal {
+    position: absolute;
+    width: 132px;
+    left: 38%;
+    top: -38px;
+    transform: rotate(
+16deg
+);
+}
+.histo-win {
+    // background:rgba(75,255,75,.45) ;
+}
+
+.histo-lose {
+    // background:rgba(255,67,67,.65) ;
+
+}

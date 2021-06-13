@@ -63,7 +63,7 @@
         </div>
         <div class="col-2">
             <div>
-                <img src="{{ asset('mvp/'.$game->MVP()->player->firstname.'.jpg') }}" class="img-fluid rounded shadow-sm" alt="MVP">
+                <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm" alt="MVP">
                 <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
                 <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
             </div>

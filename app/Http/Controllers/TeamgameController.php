@@ -14,7 +14,7 @@ class TeamgameController extends Controller
 {
   public function findTeamGames() {
       $api = new LeagueAPI([
-          LeagueAPI::SET_KEY    => "RGAPI-3076f016-e65b-4e89-a8db-74ba6f340c46",
+          LeagueAPI::SET_KEY    => "RGAPI-5d36bf06-8c99-42bc-92cb-727470e32521",
           LeagueAPI::SET_REGION => Region::EUROPE_WEST,
           ]);
           
@@ -25,13 +25,13 @@ class TeamgameController extends Controller
 
 
           // Me sélectionne
-          $player = Player::find(1);
+          $player = Player::find(2);
 
           //Récupère mon historique
           $matchlist = $api->getMatchlistByAccount($player->lol->id_sum);
           
           // Loop through 15 derniers de mes matchs
-          foreach (array_slice($matchlist->matches, 0, 15) as $match) {
+          foreach (array_slice($matchlist->matches, 0, 20) as $match) {
               $game = $api->getMatch($match->gameId);
               
               //Vide le tableau et le reset
@@ -48,10 +48,12 @@ class TeamgameController extends Controller
               }
               // si à la fin du compte y'a 5 personnes dans le nouveau tableau, c'est un match de team
               if (count($isItTeam) == 5) {
-                var_dump("match de team détecté!");
+                echo ("match de team détecté! <br>");
                 $this->storeTeamGame($game, $team);
                 $this->storeMatesGame($game, $team);
               } else {
+    // dd($game);
+
                 echo count($isItTeam). " joueurs de la team présent dans cette game<br>";
               }
           }
@@ -61,7 +63,6 @@ class TeamgameController extends Controller
   // Rentre dans cette fonction que si c'est une game qu'on a envie de récup
   
   public function storeTeamGame($game, $team) {
-    
     // _________________________ STORE LA GAME _______________________________
     
     foreach ($game->participantIdentities as $participantIdent) {
@@ -85,7 +86,6 @@ class TeamgameController extends Controller
         }
       }
     }
-
     $teamGame = TeamGame::firstOrCreate(
       ['game_id'=> $game->gameId],
       [
@@ -105,7 +105,9 @@ class TeamgameController extends Controller
                   $teamgame_id = TeamGame::where('game_id', $game->gameId)->first()->id;
                   $lol_id = Lol::where('id_sum', $participantIdent->player->accountId)->first()->id;
                   // dd($participant->stats);
-                  
+                  dd($game);
+                  $mvpScore = $this->calculateScoreMVP($participant->stats);
+                  // dd($mvpScore);
                   $teamgame_lol = TeamGame_Lol::firstOrCreate([
                     'teamgame_id' => $teamgame_id,
                     'lol_id' => $lol_id,
@@ -119,13 +121,34 @@ class TeamgameController extends Controller
                     'largestmultikill' => $participant->stats->largestMultiKill,
                     'wardsplaced' => $participant->stats->visionScore,
                     'cs' => ($participant->stats->totalMinionsKilled + $participant->stats->neutralMinionsKilled),
-                  ]);
+                  ], ['mvp' => $mvpScore]);
+
+
                 }
               }
           }
         }
         
   }
+
+
+  public function calculateScoreMVP($participant) {
+    
+    $mvpKills = ($participant->kills *2);
+    $mvpDeaths = ($participant->deaths *(-2));
+    $mvpAssists = ($participant->assists * 0.65);
+    $mvpDamages = ($participant->totalDamageDealtToChampions * 0.0005);
+    $mvpTanked = ($participant->totalDamageTaken * 0.0002);
+    $mvpGolds = ($participant->goldEarned * 0.0003);
+    $mvpVision = ($participant->visionScore * 0.28);
+    $mvpCs = (($participant->totalMinionsKilled + $participant->neutralMinionsKilled) * 0.04);
+    $helpSupport = 10; 
+
+    $mvpScore = $mvpAssists + $mvpKills + $mvpDeaths + $mvpDamages + $mvpGolds + $mvpVision + $mvpCs + $mvpTanked + $helpSupport;
+
+    return $mvpScore;
+  }
+
 }
 
 // 0 => "5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw"

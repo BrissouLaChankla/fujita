@@ -21,6 +21,7 @@ class TeamGame_Lol extends Model
         'largestmultikill',
         'wardsplaced',
         'cs',
+        'mvp'
     ];
 
 }

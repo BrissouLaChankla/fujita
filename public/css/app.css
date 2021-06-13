@@ -11,6 +11,77 @@ a {
   font-family: "Rajdhani", sans-serif;
 }
 
+:root {
+  --main-bg-color: #070720;
+  --main-bg-clear: #11112a;
+  --main-bg-clearer: #191937;
+  --main-gold: #f4c874;
+  --main-win: #3273fa;
+  --main-bg-win: #1e2a5c;
+  --main-lose: #ff4e50;
+  --main-bg-lose: #39203a;
+  --main-green: #05944f;
+}
+
+.bg-color {
+  background-color: var(--main-bg-color) !important;
+}
+
+.bg-clear {
+  background-color: var(--main-bg-clear) !important;
+}
+
+.bg-clearer {
+  background-color: var(--main-bg-clearer) !important;
+}
+
+.bg-lose {
+  background: linear-gradient(135deg, rgba(255, 78, 80, 0.16), rgba(255, 78, 80, 0)), #191937;
+}
+
+.bg-win {
+  background: linear-gradient(135deg, rgba(50, 115, 250, 0.2), rgba(50, 115, 250, 0)), #191937;
+}
+
+.color-lose {
+  color: var(--main-lose) !important;
+}
+
+.color-win {
+  color: var(--main-win) !important;
+}
+
+.color-gold {
+  color: var(--main-gold) !important;
+}
+
+.color-green {
+  color: var(--main-gold) !important;
+}
+
+.table {
+  margin-bottom: 0 !important;
+}
+
+.table th,
+.table td {
+  padding: 0.25rem !important;
+  border-top: 0 !important;
+}
+
+.history-text {
+  font-size: 0.8rem;
+}
+
+.duree {
+  position: absolute;
+  top: -34px;
+  z-index: 0;
+  right: 0;
+  background: #191c3e;
+  color: white;
+}
+
 nav a {
   font-size: 1.2em;
 }
@@ -21,18 +92,19 @@ nav img {
 
 body {
   min-height: 100vh;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
 }
 
 body#welcome {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   background-image: url("/bg/home-bg.jpg");
 }
 
 body#player,
 body#team {
   background-image: url("/bg/player-bg.jpg");
+  background-attachment: fixed;
 }
 
 .pseudo {
@@ -44,19 +116,28 @@ body#team {
 }
 
 .champ-used {
-  width: 35px;
+  width: 25px;
 }
 
 .golds {
   color: orange;
 }
 
-.medal {
+.mvp {
   position: absolute;
-  width: 132px;
-  left: 38%;
-  top: -38px;
-  transform: rotate(16deg);
+  width: 80px;
+  left: -18px;
+  top: -18px;
+  transform: rotate(-32deg);
+}
+
+.blaze-mvp {
+  color: white;
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translate(-50%);
+  font-weight: 700;
 }
 
 /*!

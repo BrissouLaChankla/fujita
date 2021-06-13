@@ -27,4 +27,9 @@ class Lol extends Model
     {
         return $this->belongsToMany(TeamGame::class);
     }
+
+    public function player() {
+        return $this->belongsTo(Player::class);
+    }
+
 }

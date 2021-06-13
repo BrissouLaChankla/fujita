@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::share ( 'players', Player::all());
-        View::share ('apikey', 'RGAPI-3076f016-e65b-4e89-a8db-74ba6f340c46');
+        View::share ('apikey', 'RGAPI-5d36bf06-8c99-42bc-92cb-727470e32521');
         //
     }
 }

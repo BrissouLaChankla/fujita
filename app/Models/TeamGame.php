@@ -29,8 +29,24 @@ class TeamGame extends Model
         'assists',
         'largestmultikill',
         'wardsplaced',
-        'cs',);
+        'cs','mvp');
     }
 
+
+    public function MVP() {
+        return $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('mvp')->orderBy('pivot_mvp', 'desc')->first(); 
+    }
+
+    public function getDamages() {
+        $pseudos = [];
+        $damages = [];
+        $pseudoDamages = $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('damages')->pluck('teamgame_lol.damages', 'pseudo'); 
+        foreach ($pseudoDamages as $pseudo => $damage) {
+            $pseudos[] =  $pseudo;
+            $damages[] = $damage;
+
+        }
+        return [$pseudos, $damages];
+    }
     
 }

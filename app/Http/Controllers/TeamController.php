@@ -74,16 +74,19 @@ class TeamController extends Controller
     
         $winlose = [$allgames->where('victory', 1)->count(),$allgames->where('victory', 0)->count()];
 
-        // foreach ($allgames as $game) {
-        //     foreach($game->lols as $lol) {
-        //         $chartdamages[
-              
-        //         ];
-        //     }  
-        // }
         
         
         $champions = json_decode(file_get_contents("http://ddragon.leagueoflegends.com/cdn/11.12.1/data/fr_FR/champion.json"), true);
+        
+        $infoDamages = [];
+       foreach ($lols as $key => $lol) {
+           $infoDamages[$key] = array (
+               "pseudo" => $lol->pseudo,
+               "damagesTotal" => $lol->getTotalDamages()
+           );
+       }
+       dd($infoDamages[0]['damagesTotal']);
+        
         return view('team')->with([
             'chartdamages' => $chartdamages,
             'champions' => $champions,

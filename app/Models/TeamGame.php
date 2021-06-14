@@ -49,4 +49,5 @@ class TeamGame extends Model
         return [$pseudos, $damages];
     }
     
+    
 }

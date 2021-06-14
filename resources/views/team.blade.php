@@ -25,19 +25,64 @@
 
     <div class="container mt-3 rounded shadow">
         <div class="row">
-            <div class="col-3">
-                
+            <div class="col-3 position-relative bg-orange text-white">
+                <div class="icon-topright" style="background:#91630b">
+                    <i class="fas fa-coins"></i>  
+                </div>
+                <div class="row" style="padding:5px">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
+                        
+                    </div>
+                    <div class="col-9 ">
+                        <h3 class="score-total mb-1">10800</h3>
+                    </div>
+                    <span class="au-total">Le plus riche</span>
+                </div>
             </div>
-            <div class="col-3">
-
+            
+            <div class="col-3 position-relative bg-dark text-white">
+                <div class="icon-topright" style="background:#060708">
+                    <i class="fas fa-skull-crossbones"></i>
+                </div>
+                <div class="row" style="padding:5px">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
+                        
+                    </div>
+                    <div class="col-9 ">
+                        <h3 class="score-total mb-1">150</h3>
+                    </div>
+                    <span class="au-total">Le plus gros inter</span>
+                </div>
             </div>
-            <div class="col-3">
-
+            
+            <div class="col-3 position-relative bg-blue text-white">
+                <div class="icon-topright" style="background:#0542c1">
+                    <i class="fas fa-bomb"></i>
+                </div>
+                <div class="row" style="padding:5px">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
+                        
+                    </div>
+                    <div class="col-9 ">
+                        <h3 class="score-total mb-1">10800</h3>
+                    </div>
+                    <span class="au-total">Le plus bourrin</span>
+                </div>
             </div>
-            <div class="col-3">
-
+            
+            <div class="col-3 position-relative bg-purple text-white">
+                <div class="icon-topright" style="background:#1c101d">
+                    <i class="far fa-eye"></i>
+                </div>
+                <div class="row" style="padding:5px">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
+                    </div>
+                    <div class="col-9 ">
+                        <h3 class="score-total mb-1">560</h3>
+                    </div>
+                    <span class="au-total">Le plus de vision</span>
+                </div>
             </div>
-
         </div>
     </div>
 
@@ -116,9 +161,7 @@
         </table>
         </div>
         <div class="col-4">
-            
-            
-            <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}"></canvas>
+            <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}" data-damages='@json($game->getDamages()[1])'></canvas>
         </div>
     </div>
 
@@ -131,14 +174,14 @@
 
         ctx3.each(function (key, element) {
             var id = $(element).data('id');
-            // console.log(damages[key]);
+            var damages = $(element).data('damages');
             document["chartDamages_" + id] = new Chart(element, {
                 type: 'bar',
                 data: {
                     labels: @json($game->getDamages()[0]),
                     datasets: [{
                         label: "Dégats",
-                        data: @json($game->getDamages()[1]),
+                        data: damages,
                         borderColor: "orange",
                         backgroundColor : "orange"
                     }]

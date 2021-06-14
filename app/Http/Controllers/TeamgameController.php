@@ -14,7 +14,7 @@ class TeamgameController extends Controller
 {
   public function findTeamGames() {
       $api = new LeagueAPI([
-          LeagueAPI::SET_KEY    => "RGAPI-5d36bf06-8c99-42bc-92cb-727470e32521",
+          LeagueAPI::SET_KEY    => "RGAPI-4caa0e17-64e3-4456-99dd-ebbc3312c588",
           LeagueAPI::SET_REGION => Region::EUROPE_WEST,
           ]);
           

@@ -21,6 +21,7 @@ a {
   --main-lose: #ff4e50;
   --main-bg-lose: #39203a;
   --main-green: #05944f;
+  --main-orange: #eda315;
 }
 
 .bg-color {
@@ -43,6 +44,22 @@ a {
   background: linear-gradient(135deg, rgba(50, 115, 250, 0.2), rgba(50, 115, 250, 0)), #191937;
 }
 
+.bg-orange {
+  background-color: var(--main-orange);
+}
+
+.bg-red {
+  background-color: var(--main-lose);
+}
+
+.bg-purple {
+  background-color: var(--main-bg-lose);
+}
+
+.bg-blue {
+  background-color: var(--main-win);
+}
+
 .color-lose {
   color: var(--main-lose) !important;
 }
@@ -53,6 +70,10 @@ a {
 
 .color-gold {
   color: var(--main-gold) !important;
+}
+
+.bg-gold {
+  background-color: var(--main-gold) !important;
 }
 
 .color-green {
@@ -80,6 +101,30 @@ a {
   right: 0;
   background: #191c3e;
   color: white;
+}
+
+.au-total {
+  position: absolute;
+  right: 12px;
+  bottom: 0;
+  font-size: 1rem;
+}
+
+.icon-topright {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-bottom-left-radius: 100px;
+  font-size: 1.1rem;
+  padding: 0.4rem;
+  padding-left: 0.9rem;
+  padding-bottom: 0.8rem;
+}
+
+.score-total {
+  font-size: 3.4rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 nav a {

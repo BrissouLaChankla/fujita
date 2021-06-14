@@ -34,7 +34,6 @@ class Lol extends Model
 
     public function getTotalDamages() {
         $storeTotalDamages = [];
-        $myId = $this->id;
         foreach ($this->teamgames as $game) {
             foreach($game->lols as $lol) {
                 if($lol->id_sum == $this->id_sum) {
@@ -47,5 +46,39 @@ class Lol extends Model
         $averageDamages = array_sum($storeTotalDamages) / count($storeTotalDamages);
         return $averageDamages;
     }
+
+    public function getTotalDeaths() {
+        $storeTotalDeaths = [];
+        
+        foreach ($this->teamgames as $game) {
+            foreach($game->lols as $lol) {
+                if($lol->id_sum == $this->id_sum) {
+                    $storeTotalDeaths[] = $lol->pivot->deaths;                    
+                }
+            }
+        }
+
+        $totalDeaths = array_sum($storeTotalDeaths);
+        $averageDeaths = array_sum($storeTotalDeaths) / count($storeTotalDeaths);
+        return $averageDeaths;
+    }
+
+    public function getTotalVisions() {
+        $storeTotalVisions = [];
+        
+        foreach ($this->teamgames as $game) {
+            foreach($game->lols as $lol) {
+                if($lol->id_sum == $this->id_sum) {
+                    $storeTotalVisions[] = $lol->pivot->wardsplaced;                    
+                }
+            }
+        }
+
+        $totalVisions = array_sum($storeTotalVisions);
+        $averageVisions = array_sum($storeTotalVisions) / count($storeTotalVisions);
+        return $averageVisions;
+    }
+
+    
 
 }

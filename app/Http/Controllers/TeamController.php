@@ -79,15 +79,29 @@ class TeamController extends Controller
         $champions = json_decode(file_get_contents("http://ddragon.leagueoflegends.com/cdn/11.12.1/data/fr_FR/champion.json"), true);
         
         $infoDamages = [];
-       foreach ($lols as $key => $lol) {
-           $infoDamages[$key] = array (
-               "pseudo" => $lol->pseudo,
-               "damagesTotal" => $lol->getTotalDamages()
-           );
+        foreach ($lols as $lol) {
+            $infoDamages[$lol->player->firstname] = $lol->getTotalDamages();
+        }
+       arsort($infoDamages);
+
+       $infoDeaths = [];
+       foreach ($lols as $lol) {
+           $infoDeaths[$lol->player->firstname] = $lol->getTotalDeaths();
        }
-       dd($infoDamages[0]['damagesTotal']);
+      arsort($infoDeaths);
+
+      $infoVisions = [];
+      foreach ($lols as $lol) {
+          $infoVisions[$lol->player->firstname] = $lol->getTotalVisions();
+      }
+     arsort($infoVisions);
+    //    dd(array_values($infoDamages)[0]);
+    //    dd(array_keys($infoDamages)[0]);
         
         return view('team')->with([
+            'topDamages' => ['name' => array_keys($infoDamages)[0], 'damages' => array_values($infoDamages)[0]],
+            'topDeaths' => ['name' => array_keys($infoDeaths)[0], 'deaths' => array_values($infoDeaths)[0]],
+            'topVisions' => ['name' => array_keys($infoVisions)[0], 'visions' => array_values($infoVisions)[0]],
             'chartdamages' => $chartdamages,
             'champions' => $champions,
             'lols'=> $lols,

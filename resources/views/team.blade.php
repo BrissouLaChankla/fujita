@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
     <div class="container bg-color p-3 rounded shadow">
         <h2 class="text-white text-center">Classements</h2>
         <div class="row">
@@ -25,9 +26,9 @@
 
     <div class="container mt-3 rounded shadow">
         <div class="row">
-            <div class="col-3 position-relative bg-orange text-white">
+            <div class="col-3 position-relative bg-orange text-white rounded-left">
                 <div class="icon-topright" style="background:#91630b">
-                    <i class="fas fa-coins"></i>  
+                    <i class="fas fa-crown"></i>
                 </div>
                 <div class="row" style="padding:5px">
                     <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
@@ -36,7 +37,7 @@
                     <div class="col-9 ">
                         <h3 class="score-total mb-1">10800</h3>
                     </div>
-                    <span class="au-total">Le plus riche</span>
+                    <span class="au-total">Le plus MVP</span>
                 </div>
             </div>
             
@@ -45,11 +46,11 @@
                     <i class="fas fa-skull-crossbones"></i>
                 </div>
                 <div class="row" style="padding:5px">
-                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower($topDeaths['name']).'.jpg')}}'); background-size:cover; background-position:center">
                         
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">150</h3>
+                        <h3 class="score-total mb-1">{{$topDeaths['deaths']}}</h3>
                     </div>
                     <span class="au-total">Le plus gros inter</span>
                 </div>
@@ -60,25 +61,24 @@
                     <i class="fas fa-bomb"></i>
                 </div>
                 <div class="row" style="padding:5px">
-                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower($topDamages['name']).'.jpg')}}'); background-size:cover; background-position:center">
                         
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">10800</h3>
+                        <h3 class="score-total mb-1">{{round($topDamages['damages'])}}</h3>
                     </div>
                     <span class="au-total">Le plus bourrin</span>
                 </div>
             </div>
-            
-            <div class="col-3 position-relative bg-purple text-white">
+            <div class="col-3 position-relative bg-purple text-white rounded-right">
                 <div class="icon-topright" style="background:#1c101d">
                     <i class="far fa-eye"></i>
                 </div>
                 <div class="row" style="padding:5px">
-                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.mb_strtolower($topVisions['name']).'.jpg')}}'); background-size:cover; background-position:center">
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">560</h3>
+                        <h3 class="score-total mb-1">{{round($topVisions['visions'])}}</h3>
                     </div>
                     <span class="au-total">Le plus de vision</span>
                 </div>

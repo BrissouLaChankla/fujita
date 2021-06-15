@@ -92,8 +92,8 @@ h1, h2, h3, h4, h5, p, span, a {
 
 .au-total {
     position: absolute;
-    right: 12px;
-    bottom: 0;
+    right: 18px;
+    bottom: -5px;
     font-size:1rem;
 }
 
@@ -114,6 +114,10 @@ h1, h2, h3, h4, h5, p, span, a {
     font-size: 3rem;
     font-weight: 700;
     margin: 0;
+}
+
+.img-mvp {
+    max-height: 150px;
 }
 
 nav {
@@ -164,7 +168,7 @@ body {
 .mvp {
     position: absolute;
     width: 80px;
-    left: -18px;
+    left: -30px;
     top: -18px;
     transform: rotate(
 -32deg

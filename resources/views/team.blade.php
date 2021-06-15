@@ -26,11 +26,17 @@
 
     <div class="container mt-3 rounded shadow">
         <div class="row">
-            <div class="col-3 position-relative bg-orange text-white rounded-left">
+            <div class="col-12 bg-color text-white text-center p-1 rounded-top">
+                    <h3 class="m-0">
+                        Wall of fame
+                    </h3>   
+            </div>
+
+            <div class="col-lg-3 position-relative bg-orange text-white rounded-left">
                 <div class="icon-topright" style="background:#91630b">
                     <i class="fas fa-crown"></i>
                 </div>
-                <div class="row" style="padding:5px">
+                <div class="row h-100">
                     <div class="col-3 p-0" style="background-image:url('{{asset('mvp/brice.jpg')}}'); background-size:cover; background-position:center">
                         
                     </div>
@@ -40,12 +46,11 @@
                     <span class="au-total">Le plus MVP</span>
                 </div>
             </div>
-            
-            <div class="col-3 position-relative bg-dark text-white">
+            <div class="col-lg-3 position-relative bg-dark text-white">
                 <div class="icon-topright" style="background:#060708">
                     <i class="fas fa-skull-crossbones"></i>
                 </div>
-                <div class="row" style="padding:5px">
+                <div class="row h-100" >
                     <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower($topDeaths['name']).'.jpg')}}'); background-size:cover; background-position:center">
                         
                     </div>
@@ -56,13 +61,12 @@
                 </div>
             </div>
             
-            <div class="col-3 position-relative bg-blue text-white">
+            <div class="col-lg-3 position-relative bg-blue text-white">
                 <div class="icon-topright" style="background:#0542c1">
                     <i class="fas fa-bomb"></i>
                 </div>
-                <div class="row" style="padding:5px">
+                <div class="row h-100">
                     <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower($topDamages['name']).'.jpg')}}'); background-size:cover; background-position:center">
-                        
                     </div>
                     <div class="col-9 ">
                         <h3 class="score-total mb-1">{{round($topDamages['damages'])}}</h3>
@@ -70,11 +74,11 @@
                     <span class="au-total">Le plus bourrin</span>
                 </div>
             </div>
-            <div class="col-3 position-relative bg-purple text-white rounded-right">
+            <div class="col-lg-3 position-relative bg-purple text-white rounded-right">
                 <div class="icon-topright" style="background:#1c101d">
                     <i class="far fa-eye"></i>
                 </div>
-                <div class="row" style="padding:5px">
+                <div class="row h-100">
                     <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.mb_strtolower($topVisions['name']).'.jpg')}}'); background-size:cover; background-position:center">
                     </div>
                     <div class="col-9 ">
@@ -106,14 +110,16 @@
                 gmdate("i:s", $game->duree)
                 }}
         </div>
-        <div class="col-2">
-            <div>
-                <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm" alt="MVP">
-                <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
-                <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
+        <div class="col-md-2">
+            <div class="d-flex justify-content-center">
+                <div class="position-relative">
+                    <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
+                    <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
+                    <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
+                </div>
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-md-6 mt-3 mt-md-0">
             <table class="table text-white">
                 <tbody>
                 
@@ -160,7 +166,7 @@
             </tbody>
         </table>
         </div>
-        <div class="col-4">
+        <div class="col-md-4">
             <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}" data-damages='@json($game->getDamages()[1])'></canvas>
         </div>
     </div>

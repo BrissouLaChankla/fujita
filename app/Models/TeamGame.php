@@ -34,7 +34,7 @@ class TeamGame extends Model
 
 
     public function MVP() {
-        return $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('mvp')->orderBy('pivot_mvp', 'desc')->first(); 
+        return $this->lols->sortByDesc('mvp'); 
     }
 
     public function getDamages() {

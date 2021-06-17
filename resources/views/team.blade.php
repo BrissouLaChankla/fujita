@@ -115,9 +115,9 @@
         <div class="col-md-2">
             <div class="d-flex justify-content-center">
                 <div class="position-relative">
-                    <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
+                    <img src="{{ asset('mvp/'.strtolower($game->MVP()->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
-                    <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
+                    <h3 class="blaze-mvp m-0">{{$game->MVP()->first()->player->firstname}}</h3>
                 </div>
             </div>
         </div>

@@ -51,11 +51,13 @@
                     <i class="fas fa-skull-crossbones"></i>
                 </div>
                 <div class="row h-100" >
-                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower($topDeaths['name']).'.jpg')}}'); background-size:cover; background-position:center">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower(array_keys($averageStats["deaths"])[0]).'.jpg')}}'); background-size:cover; background-position:center">
                         
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">{{$topDeaths['deaths']}}</h3>
+                        <h3 class="score-total mb-1">
+                            {{array_values($averageStats["deaths"])[0]}}
+                        </h3>
                     </div>
                     <span class="au-total">Le plus gros inter</span>
                 </div>
@@ -66,10 +68,10 @@
                     <i class="fas fa-bomb"></i>
                 </div>
                 <div class="row h-100">
-                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower($topDamages['name']).'.jpg')}}'); background-size:cover; background-position:center">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower(array_keys($averageStats["deaths"])[0]).'.jpg')}}'); background-size:cover; background-position:center">
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">{{round($topDamages['damages'])}}</h3>
+                        <h3 class="score-total mb-1">{{round(array_values($averageStats["damages"])[0])}}</h3>
                     </div>
                     <span class="au-total">Le plus bourrin</span>
                 </div>
@@ -79,10 +81,10 @@
                     <i class="far fa-eye"></i>
                 </div>
                 <div class="row h-100">
-                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.mb_strtolower($topVisions['name']).'.jpg')}}'); background-size:cover; background-position:center">
+                    <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.mb_strtolower(array_keys($averageStats["visions"])[0]).'.jpg')}}'); background-size:cover; background-position:center">
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">{{round($topVisions['visions'])}}</h3>
+                        <h3 class="score-total mb-1">{{round(array_values($averageStats["visions"])[0])}}</h3>
                     </div>
                     <span class="au-total">Le plus de vision</span>
                 </div>

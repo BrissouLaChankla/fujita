@@ -41,13 +41,13 @@ class TeamController extends Controller
                         $BepoSoloQ[] = $mmr->mmr_soloq;
                         $BepoFlexQ[] = $mmr->mmr_flexq;
                         break;
-                        //Louis
+                        //Adrien
                     case 3:
                         $AzaSoloQ[] = $mmr->mmr_soloq;
                         $AzaFlexQ[] = $mmr->mmr_flexq;
                         break;
-                        //Adrien
-                        case 4:
+                        //Louis
+                    case 4:
                         $LouisSoloQ[] = $mmr->mmr_soloq;
                         $LouisFlexQ[] = $mmr->mmr_flexq;
                         break;
@@ -59,10 +59,9 @@ class TeamController extends Controller
                 };
             }
 
-            $me = Lol::find(1); 
             $days = array();
 
-
+            $me = Lol::find(1);
             foreach($me->mmrs as $mmr) {
                 $days[] = $mmr->date_moment->format('d/m'); 
             }
@@ -78,31 +77,12 @@ class TeamController extends Controller
         
         $champions = json_decode(file_get_contents("http://ddragon.leagueoflegends.com/cdn/11.12.1/data/fr_FR/champion.json"), true);
         
-        $infoDamages = [];
-        foreach ($lols as $lol) {
-            $infoDamages[$lol->player->firstname] = $lol->getTotalDamages();
-        }
-       arsort($infoDamages);
-
-       $infoDeaths = [];
-       foreach ($lols as $lol) {
-           $infoDeaths[$lol->player->firstname] = $lol->getTotalDeaths();
-       }
-      arsort($infoDeaths);
-
-      $infoVisions = [];
-      foreach ($lols as $lol) {
-          $infoVisions[$lol->player->firstname] = $lol->getTotalVisions();
-      }
-     arsort($infoVisions);
-    //    dd(array_values($infoDamages)[0]);
-    //    dd(array_keys($infoDamages)[0]);
         
+        $averageStats = $this->getAverageStats();
+
         return view('team')->with([
-            'topDamages' => ['name' => array_keys($infoDamages)[0], 'damages' => array_values($infoDamages)[0]],
-            'topDeaths' => ['name' => array_keys($infoDeaths)[0], 'deaths' => array_values($infoDeaths)[0]],
-            'topVisions' => ['name' => array_keys($infoVisions)[0], 'visions' => array_values($infoVisions)[0]],
             'chartdamages' => $chartdamages,
+            'averageStats' => $averageStats,
             'champions' => $champions,
             'lols'=> $lols,
             'winlose'=>$winlose,
@@ -118,7 +98,72 @@ class TeamController extends Controller
             'BepoFlexQ' => json_encode($BepoFlexQ),
             'YoumelSoloQ' => json_encode($YoumelSoloQ),
             'YoumelFlexQ' =>json_encode($YoumelFlexQ)
-
         ]);
+    }
+    
+    
+    public function getAverageStats() {
+            
+        $participationsGames = TeamGame_Lol::all();
+        $averageStats = [];
+    
+            foreach ($participationsGames as $participationGame) {
+                switch ($participationGame->lol_id) {
+                    case 1:
+                        $briceAllDamages[] = $participationGame->damages; 
+                        $briceAllDeaths[] = $participationGame->deaths; 
+                        $briceAllVisions[] = $participationGame->wardsplaced; 
+                    break;
+                    case 2:
+                        $clementAllDamages[] = $participationGame->damages; 
+                        $clementAllDeaths[] = $participationGame->deaths; 
+                        $clementAllVisions[] = $participationGame->wardsplaced; 
+                    break;
+                    case 3:
+                        $adrienAllDamages[] = $participationGame->damages; 
+                        $adrienAllDeaths[] = $participationGame->deaths; 
+                        $adrienAllVisions[] = $participationGame->wardsplaced; 
+                    break;
+                    case 4:
+                        $louisAllDamages[] = $participationGame->damages; 
+                        $louisAllDeaths[] = $participationGame->deaths; 
+                        $louisAllVisions[] = $participationGame->wardsplaced; 
+                    break;
+                    case 5:
+                        $sachaAllDamages[] = $participationGame->damages; 
+                        $sachaAllDeaths[] = $participationGame->deaths; 
+                        $sachaAllVisions[] = $participationGame->wardsplaced; 
+                    break;
+                    }
+                }
+                $averageStats = [
+                    "damages" => [
+                        "Brice" => array_sum($briceAllDamages) / count($briceAllDamages),
+                        "Clément" => array_sum($clementAllDamages) / count($clementAllDamages),
+                        "Adrien" =>  array_sum($adrienAllDamages) / count($adrienAllDamages),
+                        "Louis" => array_sum($louisAllDamages) / count($louisAllDamages),
+                        "Sacha" => array_sum($sachaAllDamages) / count($sachaAllDamages)
+                    ],
+                    "deaths" => [
+                        "Brice" => array_sum($briceAllDeaths) / count($briceAllDeaths),
+                        "Clément" => array_sum($clementAllDeaths) / count($clementAllDeaths),
+                        "Adrien" =>  array_sum($adrienAllDeaths) / count($adrienAllDeaths),
+                        "Louis" => array_sum($louisAllDeaths) / count($louisAllDeaths),
+                        "Sacha" => array_sum($sachaAllDeaths) / count($sachaAllDeaths)
+                    ],
+                    "visions" => [
+                        "Brice" => array_sum($briceAllVisions) / count($briceAllVisions),
+                        "Clément" => array_sum($clementAllVisions) / count($clementAllVisions),
+                        "Adrien" =>  array_sum($adrienAllVisions) / count($adrienAllVisions),
+                        "Louis" => array_sum($louisAllVisions) / count($louisAllVisions),
+                        "Sacha" => array_sum($sachaAllVisions) / count($sachaAllVisions)
+                        ]
+                    ];
+                    
+                    arsort($averageStats["damages"]);
+                    arsort($averageStats["deaths"]);
+                    arsort($averageStats["visions"]);
+                    
+                    return $averageStats;
     }
 }

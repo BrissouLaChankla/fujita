@@ -15,7 +15,7 @@ class MmrController extends Controller
 
     public function getTotalSoloQMMR($summonerid) {
         $api = new LeagueAPI([
-            LeagueAPI::SET_KEY    => 'RGAPI-ae59570b-9baa-4ce0-b0ad-8815e0d7a114',
+            LeagueAPI::SET_KEY    => getenv('LOL_KEY'),
             LeagueAPI::SET_REGION => Region::EUROPE_WEST,
         ]);
 

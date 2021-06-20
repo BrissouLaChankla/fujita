@@ -25,13 +25,13 @@ class TeamgameController extends Controller
 
 
           // Me sélectionne
-          $player = Player::find(2);
+          $player = Player::find(1);
 
           //Récupère mon historique
           $matchlist = $api->getMatchlistByAccount($player->lol->id_sum);
           
           // Loop through 15 derniers de mes matchs
-          foreach (array_slice($matchlist->matches, 0, 20) as $match) {
+          foreach (array_slice($matchlist->matches, 0, 30) as $match) {
               $game = $api->getMatch($match->gameId);
               
               //Vide le tableau et le reset
@@ -66,7 +66,7 @@ class TeamgameController extends Controller
     // _________________________ STORE LA GAME _______________________________
     
     foreach ($game->participantIdentities as $participantIdent) {
-      if ($participantIdent->player->accountId == "5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw") {
+      if ($participantIdent->player->accountId == "0xxSlrL4_1qQ_s12vVyI1WZzg5Jd8RruCLPHV5OjYoZkpw") {
         $myId = $participantIdent->getData()['participantId'];
       }
     }

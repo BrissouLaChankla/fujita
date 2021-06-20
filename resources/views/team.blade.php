@@ -5,7 +5,7 @@
     <div class="container bg-color p-3 rounded shadow">
         <h2 class="text-white text-center">Classements</h2>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="card bg-clearer">
                     <div class="card-body">
                         <h5 class="card-title text-white text-center">Elo SoloQ</h5>
@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="card bg-clearer">
                     <div class="card-body">
                         <h5 class="card-title text-white text-center">Elo FlexQ</h5>
@@ -112,21 +112,21 @@
                 gmdate("i:s", $game->duree)
                 }}
         </div>
-        <div class="col-md-2">
+        <div class="col-lg-2">
             <div class="d-flex justify-content-center">
                 <div class="position-relative">
-                    <img src="{{ asset('mvp/'.strtolower($game->MVP()->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
+                    <img src="{{ asset('mvp/'.strtolower($game->lols()->orderBy('teamgame_lol.mvp')->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
                     <h3 class="blaze-mvp m-0">{{$game->MVP()->first()->player->firstname}}</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mt-3 mt-md-0">
+        <div class="col-lg-6 mt-3 mt-md-0">
             <table class="table text-white">
                 <tbody>
                 
                     @foreach ($game->lols as $lol)
-                    {{-- {{dd($game->lols)}} --}}
+                    {{dd($game->lols->player)}}
                       <tr class="history-text">
                         <td>
                             @foreach ($champions['data'] as $champ)
@@ -168,7 +168,7 @@
             </tbody>
         </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-lg-4">
             <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}" data-damages='@json($game->getDamages()[1])'></canvas>
         </div>
     </div>

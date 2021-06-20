@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class TeamGame extends Model
-{
+{   
     
     protected $table = 'teamgames';
     
@@ -29,12 +29,16 @@ class TeamGame extends Model
         'assists',
         'largestmultikill',
         'wardsplaced',
-        'cs','mvp');
+        'cs','mvp')->orderBy('mvp', 'desc');
     }
 
 
+    
     public function MVP() {
-        return $this->lols->sortByDesc('mvp'); 
+        return $this->lols()->orderBy('teamgame_lol.mvp');
+        $top = Top::with(['articles' => function ($q) {
+            $q->orderBy('pivot_range', 'asc');
+          }])->first();
     }
 
     public function getDamages() {

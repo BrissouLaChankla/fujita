@@ -90,6 +90,28 @@ h1, h2, h3, h4, h5, p, span, a {
 
 }
 
+.mvp-classement div{
+    color:white;
+    background-color: var(--main-gold);
+    text-align: center;
+    font-weight: bold;
+    padding-left:6px;
+    padding-right: 6px;
+    border-radius:50px;
+    &.deux{
+        background-color: var(--main-green);
+    }
+    &.trois {
+        background-color: var(--main-win);
+    }
+    &.quatre {
+        background-color:var(--main-bg-clearer);
+    }
+    &.cinq {
+        background-color: var(--main-lose);
+    }
+}
+
 .au-total {
     position: absolute;
     right: 18px;

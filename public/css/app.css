@@ -103,6 +103,32 @@ a {
   color: white;
 }
 
+.mvp-classement div {
+  color: white;
+  background-color: var(--main-gold);
+  text-align: center;
+  font-weight: bold;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-radius: 50px;
+}
+
+.mvp-classement div.deux {
+  background-color: var(--main-green);
+}
+
+.mvp-classement div.trois {
+  background-color: var(--main-win);
+}
+
+.mvp-classement div.quatre {
+  background-color: var(--main-bg-clearer);
+}
+
+.mvp-classement div.cinq {
+  background-color: var(--main-lose);
+}
+
 .au-total {
   position: absolute;
   right: 18px;

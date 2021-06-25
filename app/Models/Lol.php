@@ -12,7 +12,7 @@ class Lol extends Model
         'hotstreak',
         'lp',
         'rank',
-        'tier',
+        'order_histo',
         'id_sum',
         'wins',
         'loses',

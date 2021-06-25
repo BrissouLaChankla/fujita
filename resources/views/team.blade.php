@@ -5,7 +5,7 @@
     <div class="container bg-color p-3 rounded shadow">
         <h2 class="text-white text-center">Classements</h2>
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-md-6">
                 <div class="card bg-clearer">
                     <div class="card-body">
                         <h5 class="card-title text-white text-center">Elo SoloQ</h5>
@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-md-6">
                 <div class="card bg-clearer">
                     <div class="card-body">
                         <h5 class="card-title text-white text-center">Elo FlexQ</h5>
@@ -112,21 +112,30 @@
                 gmdate("i:s", $game->duree)
                 }}
         </div>
-        <div class="col-lg-2">
+        <div class="col-md-2">
             <div class="d-flex justify-content-center">
                 <div class="position-relative">
-                    <img src="{{ asset('mvp/'.strtolower($game->lols()->orderBy('teamgame_lol.mvp')->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
+                    <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
-                    <h3 class="blaze-mvp m-0">{{$game->MVP()->first()->player->firstname}}</h3>
+                    <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
+                    @php
+                        $classementMVP = [];
+                        foreach ($game->lols as $lol) {
+                            $classementMVP[$lol->pseudo] = $lol->pivot->mvp;
+                        }
+                        rsort($classementMVP);
+                    @endphp
+
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 mt-3 mt-md-0">
+        <div class="col-md-6 mt-3 mt-md-0">
             <table class="table text-white">
                 <tbody>
                 
                     @foreach ($game->lols as $lol)
-                    {{dd($game->lols->player)}}
+                    {{-- {{dd($game->lols)}} --}}
+                  
                       <tr class="history-text">
                         <td>
                             @foreach ($champions['data'] as $champ)
@@ -162,13 +171,31 @@
                         </td>
                         <td><i class="far fa-eye"></i> {{ $lol->pivot->wardsplaced }}</td>
                         <td>{{ $lol->pivot->cs}} cs</td>
-                        {{-- <td> {{ $lol->pivot->mvp}}</td> --}}
-                      </tr>
-                @endforeach
+                        <td class="mvp-classement" >
+                            @switch($lol->pivot->mvp)
+                                @case($classementMVP[0])
+                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}}><i class="fas fa-crown"></i></div>
+                                @break
+                                @case($classementMVP[1])
+                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="deux">2</div>
+                                @break
+                                @case($classementMVP[2])
+                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="trois">3</div>
+                                @break
+                                @case($classementMVP[3])
+                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="quatre">4</div>
+                                @break
+                                @case($classementMVP[4])
+                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="cinq">5</div>
+                                @break
+                            @endswitch
+                        </td>
+                    </tr>
+                    @endforeach
             </tbody>
         </table>
         </div>
-        <div class="col-lg-4">
+        <div class="col-md-4">
             <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}" data-damages='@json($game->getDamages()[1])'></canvas>
         </div>
     </div>
@@ -338,5 +365,8 @@
             }
         });
 
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
     </script>
 @endsection

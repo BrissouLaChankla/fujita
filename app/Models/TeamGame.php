@@ -29,16 +29,13 @@ class TeamGame extends Model
         'assists',
         'largestmultikill',
         'wardsplaced',
-        'cs','mvp')->orderBy('mvp', 'desc');
+        'cs','mvp')->orderBy('order_histo', 'asc');
     }
 
 
     
     public function MVP() {
-        return $this->lols()->orderBy('teamgame_lol.mvp');
-        $top = Top::with(['articles' => function ($q) {
-            $q->orderBy('pivot_range', 'asc');
-          }])->first();
+        return $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('mvp')->orderBy('mvp', 'desc')->first();
     }
 
     public function getDamages() {

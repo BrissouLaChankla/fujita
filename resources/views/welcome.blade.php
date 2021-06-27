@@ -3,6 +3,12 @@
 @section('content')
 
 <div class="my-3 text-uppercase text-center">
+    <div class="mb-3">
+
+        <video autoplay loop muted>
+            <source src="{{asset("video/highlight_fujita.mp4")}}" type="video/mp4" />
+        </video>
+    </div>
     <h1 class="text-success">Esports and streaming</h1>
     <h2 class="text-white">Fujita</h2>
 </div>

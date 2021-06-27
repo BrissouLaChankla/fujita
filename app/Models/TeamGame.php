@@ -41,7 +41,7 @@ class TeamGame extends Model
     public function getDamages() {
         $pseudos = [];
         $damages = [];
-        $pseudoDamages = $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('damages')->pluck('teamgame_lol.damages', 'pseudo'); 
+        $pseudoDamages = $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('damages')->orderBy('order_histo', 'asc')->pluck('teamgame_lol.damages', 'pseudo'); 
         foreach ($pseudoDamages as $pseudo => $damage) {
             $pseudos[] =  $pseudo;
             $damages[] = $damage;

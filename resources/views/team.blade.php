@@ -114,7 +114,7 @@
         </div>
         <div class="col-md-2">
             <div class="d-flex justify-content-center">
-                <div class="position-relative">
+                <div class="position-relative open-profile-mvp">
                     <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
                     <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
@@ -174,19 +174,19 @@
                         <td class="mvp-classement" >
                             @switch($lol->pivot->mvp)
                                 @case($classementMVP[0])
-                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}}><i class="fas fa-crown"></i></div>
+                                   <div data-toggle="tooltip" data-placement="right" title={{round($lol->pivot->mvp, 2)}}><i class="fas fa-crown"></i></div>
                                 @break
                                 @case($classementMVP[1])
-                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="deux">2</div>
+                                   <div data-toggle="tooltip" data-placement="right" title={{round($lol->pivot->mvp, 2)}} class="deux">2</div>
                                 @break
                                 @case($classementMVP[2])
-                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="trois">3</div>
+                                   <div data-toggle="tooltip" data-placement="right" title={{round($lol->pivot->mvp, 2)}} class="trois">3</div>
                                 @break
                                 @case($classementMVP[3])
-                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="quatre">4</div>
+                                   <div data-toggle="tooltip" data-placement="right" title={{round($lol->pivot->mvp, 2)}} class="quatre">4</div>
                                 @break
                                 @case($classementMVP[4])
-                                   <div data-toggle="tooltip" data-placement="top" title={{round($lol->pivot->mvp, 2)}} class="cinq">5</div>
+                                   <div data-toggle="tooltip" data-placement="right" title={{round($lol->pivot->mvp, 2)}} class="cinq">5</div>
                                 @break
                             @endswitch
                         </td>
@@ -201,6 +201,8 @@
     </div>
 
     @endforeach
+
+    @include('includes.modal')
     </div>
     <script>
         var ctx = document.getElementById('chartSoloQ').getContext('2d');
@@ -367,6 +369,10 @@
 
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
+            $('.open-profile-mvp').on('click', function() {
+                $('#Modal').modal();
+                $('.modal-title').text("caca");
+            });
         })
     </script>
 @endsection

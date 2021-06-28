@@ -35,13 +35,13 @@ class TeamGame extends Model
 
     
     public function MVP() {
-        return $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('mvp')->orderBy('mvp', 'desc')->first();
+        return $this->lols()->reorder()->orderBy('mvp', 'desc');
     }
 
     public function getDamages() {
         $pseudos = [];
         $damages = [];
-        $pseudoDamages = $this->belongsToMany(Lol::class, 'teamgame_lol', 'teamgame_id')->withPivot('damages')->orderBy('order_histo', 'asc')->pluck('teamgame_lol.damages', 'pseudo'); 
+        $pseudoDamages = $this->lols->pluck('pivot.damages', 'pseudo'); 
         foreach ($pseudoDamages as $pseudo => $damage) {
             $pseudos[] =  $pseudo;
             $damages[] = $damage;

@@ -114,10 +114,11 @@
         </div>
         <div class="col-md-2">
             <div class="d-flex justify-content-center">
-                <div class="position-relative open-profile-mvp" data-lol_id="{{$game->MVP()->pivot->lol_id}}" data-teamgame_id="{{$game->MVP()->pivot->teamgame_id}}" data-player="{{$game->MVP()->player->firstname}}">
-                    <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
+                <div class="position-relative open-profile-mvp">
+
+                    <img src="{{ asset('mvp/'.strtolower($game->MVP->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
-                    <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
+                    <h3 class="blaze-mvp m-0">{{$game->MVP->first()->player->firstname}}</h3>
                     @php
                         $classementMVP = [];
                         foreach ($game->lols as $lol) {

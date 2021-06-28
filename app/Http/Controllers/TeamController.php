@@ -15,8 +15,7 @@ class TeamController extends Controller
 
         $lols = Lol::all();
         $mmrs = Mmr::all();
-        $allgames = TeamGame::all();
-        
+        $allgames = TeamGame::with('lols.teamgames')->get();
 
         $BriceSoloQ = array();
         $BriceFlexQ = array();

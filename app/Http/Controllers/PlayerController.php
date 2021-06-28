@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Player;
 use App\Models\Lol;
 use App\Models\Mmr;
+use App\Models\TeamGame;
+use App\Models\TeamGame_Lol;
 
 use RiotAPI\LeagueAPI\LeagueAPI;
 use RiotAPI\Base\Definitions\Region;
@@ -61,7 +63,12 @@ class PlayerController extends Controller
     }
 
     public function getMvpProfile(Request $request) {
-        return view('includes.contentModalMvp');
+        // Lol::find($request->lol_id);
+        // TeamGame::find($request->teamgame_id);
+        $mvpPlayer = TeamGame_Lol::where('lol_id', $request->lol_id)->where('teamgame_id', $request->teamgame_id)->first();
+        return view('includes.contentModalMvp')->with([
+            'player' => $mvpPlayer,
+        ]);
     }
 
 

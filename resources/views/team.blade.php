@@ -370,25 +370,27 @@
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
             $('.open-profile-mvp').on('click', function() {
-                let mvp = $(this).data('player');
-                let teamgame_id = $(this).data('teagame_id');
-                let lol_id = $(this).data('lol_id');
+                var mvp = $(this).data('player');
+                var teamgame_id = $(this).data('teamgame_id');
+                var lol_id = $(this).data('lol_id');
 
                 $('#Modal').modal();
                 $('.modal-body').html("<i class='fas fa-spinner fa-spin'></i>");
 
                 $('.modal-title').html(mvp + " est le MVP de ce match ! <i class='fas fa-crown'></i>");
 
-
+                
+      
                 $.ajax({
+                    
                         type: "GET",
                         url: `/get/mvpprofile`,
                         data: {
                             'lol_id' : lol_id,
                             'teamgame_id' : teamgame_id,
                         },
-                        success: function(data) {
-                            $('.modal-body').html(data);
+                        success: function(results) {
+                            $('.modal-body').html(results);
                         },
                         error: function() {
                             console.log('erreur ajax');

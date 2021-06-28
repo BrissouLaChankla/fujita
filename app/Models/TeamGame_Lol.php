@@ -24,4 +24,5 @@ class TeamGame_Lol extends Model
         'mvp'
     ];
 
+
 }

@@ -21,6 +21,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    
 </head>
 <body id="{{$view_name}}">
     @include('layouts.nav')
@@ -29,6 +31,7 @@
             @yield('content')
         </main>
     </div>
+    @yield('scripts')
     {{-- @include('layouts.footer') --}}
 </body>
 </html>

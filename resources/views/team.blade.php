@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mt-3 mt-md-0">
                 <div class="card bg-clearer">
                     <div class="card-body">
                         <h5 class="card-title text-white text-center">Elo FlexQ</h5>
@@ -114,7 +114,7 @@
         </div>
         <div class="col-md-2">
             <div class="d-flex justify-content-center">
-                <div class="position-relative open-profile-mvp">
+                <div class="position-relative open-profile-mvp" data-lol_id="{{$game->MVP()->pivot->lol_id}}" data-teamgame_id="{{$game->MVP()->pivot->teamgame_id}}" data-player="{{$game->MVP()->player->firstname}}">
                     <img src="{{ asset('mvp/'.strtolower($game->MVP()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
                     <h3 class="blaze-mvp m-0">{{$game->MVP()->player->firstname}}</h3>
@@ -370,8 +370,30 @@
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
             $('.open-profile-mvp').on('click', function() {
+                let mvp = $(this).data('player');
+                let teamgame_id = $(this).data('teagame_id');
+                let lol_id = $(this).data('lol_id');
+
                 $('#Modal').modal();
-                $('.modal-title').text("caca");
+                $('.modal-body').html("<i class='fas fa-spinner fa-spin'></i>");
+
+                $('.modal-title').html(mvp + " est le MVP de ce match ! <i class='fas fa-crown'></i>");
+
+
+                $.ajax({
+                        type: "GET",
+                        url: `/get/mvpprofile`,
+                        data: {
+                            'lol_id' : lol_id,
+                            'teamgame_id' : teamgame_id,
+                        },
+                        success: function(data) {
+                            $('.modal-body').html(data);
+                        },
+                        error: function() {
+                            console.log('erreur ajax');
+                        }
+                });
             });
         })
     </script>

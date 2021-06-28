@@ -60,7 +60,9 @@ class PlayerController extends Controller
         ]);
     }
 
-
+    public function getMvpProfile(Request $request) {
+        return view('includes.contentModalMvp');
+    }
 
 
 }

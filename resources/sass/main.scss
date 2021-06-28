@@ -47,6 +47,9 @@ h1, h2, h3, h4, h5, p, span, a {
     background-color: var(--main-win);
 }
 
+.hamburger{
+    z-index: 120;
+}
 .color-lose {
     color: var(--main-lose)!important;
 }
@@ -78,6 +81,17 @@ h1, h2, h3, h4, h5, p, span, a {
 .history-text {
     font-size:.8rem;
 
+}
+
+.mobile-opened {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    background-color: var(--main-bg-color);
+    overflow: hidden;
 }
 
 .duree {
@@ -142,12 +156,12 @@ h1, h2, h3, h4, h5, p, span, a {
     max-height: 150px;
 }
 
-nav {
+nav, .nav {
     a {
         font-size:1.2em;
     }
     img {
-        width: 200px;
+        width: 150px;
     }
 }
 

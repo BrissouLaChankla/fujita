@@ -2,17 +2,17 @@
 
 @section('content')
 
-<div class="my-3 text-uppercase text-center">
-    <div class="mb-3">
-
-        <video autoplay loop muted>
+    <div class="container text-center">
+        <video width="80%" class="shadow" style="border-radius:50px" autoplay loop muted>
             <source src="{{asset("video/highlight_fujita.mp4")}}" type="video/mp4" />
         </video>
     </div>
+
+<div class="my-3 text-uppercase text-center">
     <h1 class="text-success">Esports and streaming</h1>
     <h2 class="text-white">Fujita</h2>
-</div>
-<div class="d-flex justify-content-center">
+</div> <i class="fas fa-crown"></i>
+<div class="d-flex flex-wrap justify-content-center">
         <div class="d-flex align-items-center mx-5">
             <a href="https://twitter.com/EsportUraken" class="text-decoration-none text-white d-flex">
                 <i class="text-success med-icon fab fa-twitter"></i>

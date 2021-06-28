@@ -87,6 +87,8 @@ class TeamController extends Controller
             'lols'=> $lols,
             'winlose'=>$winlose,
             'allgames' => $allgames,
+
+            
             'days'=> json_encode($days),
             'BriceSoloQ' => json_encode($BriceSoloQ),
             'BriceFlexQ' => json_encode($BriceFlexQ),

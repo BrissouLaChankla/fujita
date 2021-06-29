@@ -114,7 +114,7 @@
         </div>
         <div class="col-md-2">
             <div class="d-flex justify-content-center">
-                <div class="position-relative open-profile-mvp">
+                <div class="position-relative open-profile-mvp" data-player="{{$game->MVP->first()->player->firstname}}">
 
                     <img src="{{ asset('mvp/'.strtolower($game->MVP->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
@@ -142,8 +142,9 @@
                             @foreach ($champions['data'] as $champ)
                             @switch($champ["key"])
                                 @case($lol->pivot->champion)
-                                    <img src="http://ddragon.leagueoflegends.com/cdn/11.12.1/img/champion/{{ $champ['id'] }}.png"
+                                    <img src="http://ddragon.leagueoflegends.com/cdn/{{$ddragonversion}}/img/champion/{{ $champ['id'] }}.png"
                                         class="champ-used" alt="">
+                                        
                                 @break
                                 @default
                             @endswitch
@@ -374,6 +375,8 @@
                 var mvp = $(this).data('player');
                 var teamgame_id = $(this).data('teamgame_id');
                 var lol_id = $(this).data('lol_id');
+            
+                // <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{ $champ['id'] }}_0.jpg"
 
                 $('#Modal').modal();
                 $('.modal-body').html("<i class='fas fa-spinner fa-spin'></i>");
@@ -389,6 +392,7 @@
                         data: {
                             'lol_id' : lol_id,
                             'teamgame_id' : teamgame_id,
+                            'champ': champ
                         },
                         success: function(results) {
                             $('.modal-body').html(results);

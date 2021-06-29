@@ -31,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::share ( 'players', Player::with('lol')->get());
+        
         //
     }
 }

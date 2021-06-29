@@ -12,6 +12,7 @@ class TeamController extends Controller
 {
     
     public function index() {
+        $ddragonversion = json_decode(file_get_contents("https://ddragon.leagueoflegends.com/api/versions.json"), true)[0];
 
         $lols = Lol::all();
         $mmrs = Mmr::all();
@@ -77,7 +78,7 @@ class TeamController extends Controller
 
         
         
-        $champions = json_decode(file_get_contents("http://ddragon.leagueoflegends.com/cdn/11.12.1/data/fr_FR/champion.json"), true);
+        $champions = json_decode(file_get_contents("http://ddragon.leagueoflegends.com/cdn/".$ddragonversion."/data/fr_FR/champion.json"), true);
         
         
         $averageStats = $this->getAverageStats();
@@ -89,7 +90,7 @@ class TeamController extends Controller
             'lols'=> $lols,
             'winlose'=>$winlose,
             'allgames' => $allgames,
-
+            'ddragonversion' => $ddragonversion,
             
             'days'=> json_encode($days),
             'BriceSoloQ' => json_encode($BriceSoloQ),

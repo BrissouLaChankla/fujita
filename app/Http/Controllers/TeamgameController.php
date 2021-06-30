@@ -12,7 +12,13 @@ use App\Models\Lol;
 
 class TeamgameController extends Controller
 {
-  public function findTeamGames() {
+  public function findTeamGames($btnrefresh=null) {
+    if($btnrefresh == null) {
+      $nbmatches= 20;
+    } else {
+      $nbmatches = 4;
+    }
+    
       $api = new LeagueAPI([
           LeagueAPI::SET_KEY    => getenv('LOL_KEY'),
           LeagueAPI::SET_REGION => Region::EUROPE_WEST,
@@ -31,7 +37,7 @@ class TeamgameController extends Controller
           $matchlist = $api->getMatchlistByAccount($player->lol->id_sum);
           
           // Loop through 15 derniers de mes matchs
-          foreach (array_slice($matchlist->matches, 0, 30) as $match) {
+          foreach (array_slice($matchlist->matches, 0, $nbmatches) as $match) {
               $game = $api->getMatch($match->gameId);
               
               //Vide le tableau et le reset

@@ -28,4 +28,4 @@ Route::get('/storeall/mmr', 'MmrController@storeAllMMR')->name('store-all-mmr');
 
 Route::get('/get/mvpprofile', 'PlayerController@getMvpProfile')->name('get-mvp-profile');
 
-Route::get('/storeall/games', 'TeamgameController@findTeamGames')->name('store-all-games');
+Route::get('/storeall/games/{btnrefresh?}', 'TeamgameController@findTeamGames')->name('store-all-games');

@@ -94,6 +94,10 @@
 
 
     <div class="container bg-color p-md-5 mt-3 rounded shadow">
+        <div class="text-right">
+            <div class="btn btn-primary refresh-matches">Refresh matches</div>
+        </div>
+        
         <h1><strong class="text-success">{{$winlose[0]}} wins</strong> / <strong class="text-danger">{{$winlose[1]}} losses</strong></h1>
 
         @foreach ($allgames as $key => $game)
@@ -370,7 +374,28 @@
         });
 
         $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
+            $('[data-toggle="tooltip"]').tooltip();
+            
+            $('.refresh-matches').on('click', function() {
+                let btn = $(this);
+                btn.html('<i class="px-5 fas fa-spinner fa-spin"></i>');
+                
+                $.ajax({
+                    type: "GET",
+                    url: `/storeall/games/btnrefresh`,
+                    success: function(results) {
+                        btn.removeClass('btn-primary');
+                        btn.addClass('btn-success');
+                        btn.html('Les données sont à jour <i class="fas fa-check"></i>');
+                        document.location.reload();
+                    },
+                    error: function() {
+                        console.log('erreur ajax');
+                    }
+                });
+            });
+            
+            
             $('.open-profile-mvp').on('click', function() {
                 var mvp = $(this).data('player');
                 var teamgame_id = $(this).data('teamgame_id');

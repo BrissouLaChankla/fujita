@@ -19,7 +19,7 @@ class TeamController extends Controller
         $allgames = TeamGame::with([
             'lols', 
             'MVP',
-            'MVP.player'])->get();
+            'MVP.player'])->orderBy('created_at', 'desc')->get();
         
         $BriceSoloQ = array();
         $BriceFlexQ = array();

@@ -106,11 +106,11 @@
                     <strong class="color-win"> Victoire </strong>
             </h2>
             <div class="row align-items-center position-relative p-3 rounded shadow bg-win">
-            @else
+                @else
                 <strong class="color-lose"> Défaite </strong>
                 </h2>
                 <div class="row align-items-center position-relative p-3 rounded shadow bg-lose">
-        @endif
+                @endif
         <div class="duree p-2 rounded">
             <i class="far fa-clock"></i> {{
                 gmdate("i:s", $game->duree)
@@ -204,11 +204,18 @@
         <div class="col-md-4">
             <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}" data-damages='@json($game->getDamages()[1])'></canvas>
         </div>
+        <div>
+            <button type="button" class="btn btn-primary open-video-modal" data-gameid="{{$game->id}}">
+                Ajouter des videos
+              </button>
+       
+        </div>
     </div>
 
     @endforeach
 
     @include('includes.modal')
+    @include('includes.modal-newvideo')
     </div>
     <script>
         var ctx = document.getElementById('chartSoloQ').getContext('2d');
@@ -372,6 +379,9 @@
                 }
             }
         });
+        
+        
+        Dropzone.autoDiscover = false;
 
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();
@@ -427,6 +437,27 @@
                         }
                 });
             });
+            
+            
+            // DROPZONE UPLOAD VIDEO
+            var CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+
+            $('.dropzone').each(function(i, el) {
+                // var id = el.data('id');
+                
+                var myDropzone = new Dropzone(el,{ 
+                    maxFilesize: 3,  // 3 mb
+                    acceptedFiles: ".mp4,.avi",
+                });
+                myDropzone.on("sending", function(file, xhr, formData) {
+                formData.append("_token", CSRF_TOKEN);
+                }); 
+            });
+            
+            $('.open-video-modal').on('click', function(){
+                  $('.dropzone').attr('id', $(this).data('gameid'));
+                  $('#addVideoModal').modal();
+              });
         })
     </script>
 @endsection

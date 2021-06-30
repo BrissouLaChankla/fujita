@@ -6411,7 +6411,7 @@ readers do not read off random characters that represent icons */
 .hamburger.is-active .hamburger-inner,
 .hamburger.is-active .hamburger-inner::before,
 .hamburger.is-active .hamburger-inner::after {
-  background-color: #ffffff;
+  background-color: #000;
 }
 
 .hamburger-box {
@@ -6432,7 +6432,7 @@ readers do not read off random characters that represent icons */
 .hamburger-inner::after {
   width: 40px;
   height: 4px;
-  background-color: #ffffff;
+  background-color: #000;
   border-radius: 4px;
   position: absolute;
   transition-property: transform;

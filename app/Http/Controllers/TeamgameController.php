@@ -156,10 +156,29 @@ class TeamgameController extends Controller
     return $mvpScore;
   }
 
-}
 
-// 0 => "5XKQuBcRS27_6mD4OPrJfcf336q9g47w_cpGmVt9o3Mwaw"
-// 1 => "9V3ycnI7NJeGP7br32LVwHK8dQy9txxvJrDKLPk5PyBg0g"
-// 2 => "u3fnh3y5o9MUFzb4fjDyeo18-pcic9e8WiQ8Nf2gmpmRIps"
-// 3 => "XQUFRYb6ZGb0avres5YYkmHJrpmhdO4P9Isgm7WUxpRxiQA"
-// 4 => "wtX33Vp4mUIiVuJQ7khu_hDBGPOJDcUkORzIxEujHadO0VI"
+  public function videoUpload(Request $request) {
+      if($request->hasFile('file')) {
+
+        // Upload path
+        $destinationPath = storage_path('app/public/video/moments_forts/');
+        
+
+        // Get file extension
+        $extension = $request->file('file')->getClientOriginalExtension();
+
+        // Valid extensions
+        $validextensions = array("mp4","mkv","avi");
+
+        // Check extension
+        if(in_array(strtolower($extension), $validextensions)){
+
+          // Rename file 
+          $fileName = $request->file('file')->getClientOriginalName().time() .'.' . $extension;
+          // Uploading file to given path
+          $request->file('file')->move($destinationPath, $fileName); 
+
+        }
+    }
+  }
+}

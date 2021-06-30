@@ -26,6 +26,7 @@
     "dependencies": {
         "chart.js": "^3.3.2",
         "chartjs-plugin-annotation": "^1.0.2",
+        "dropzone": "^5.9.2",
         "hamburgers": "^1.1.3"
     }
 }

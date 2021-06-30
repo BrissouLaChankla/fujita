@@ -14,12 +14,13 @@
                         <button type="button" class="dz-button">Glissez ici votre vidéo du match!</button><br>
                         <span class="note needsclick">(1 ou plusieurs en .mp4 ou .avi !)</span>
                     </div>
-            </form> 
+                    <input type="hidden" id="game_id" name="game_id" value="">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-          <button type="button" class="btn btn-primary">Envoyer les vidéos</button>
+          <button type="submit" class="btn btn-primary">Envoyer les vidéos</button>
         </div>
+      </form> 
       </div>
     </div>
   </div>

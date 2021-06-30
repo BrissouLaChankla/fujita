@@ -158,6 +158,7 @@ class TeamgameController extends Controller
 
 
   public function videoUpload(Request $request) {
+    dd($request);
       if($request->hasFile('file')) {
 
         // Upload path

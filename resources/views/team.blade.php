@@ -442,20 +442,19 @@
             // DROPZONE UPLOAD VIDEO
             var CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
-            $('.dropzone').each(function(i, el) {
                 // var id = el.data('id');
                 
-                var myDropzone = new Dropzone(el,{ 
-                    maxFilesize: 3,  // 3 mb
-                    acceptedFiles: ".mp4,.avi",
+                var myDropzone = new Dropzone('.dropzone',{ 
+                    maxFilesize: 15,  // 15 mb
+                    acceptedFiles: "image/*",
+                    
                 });
                 myDropzone.on("sending", function(file, xhr, formData) {
                 formData.append("_token", CSRF_TOKEN);
                 }); 
-            });
             
             $('.open-video-modal').on('click', function(){
-                  $('.dropzone').attr('id', $(this).data('gameid'));
+                  $('#game_id').val($(this).data('gameid'));
                   $('#addVideoModal').modal();
               });
         })

@@ -8,19 +8,17 @@
           </button>
         </div>
         <div class="modal-body">
-            <form action="{{route('videoUpload')}}" class='dropzone bg-clearer text-light' method="POST" enctype="multipart/form-data">
+            <form  method="POST" enctype="multipart/form-data" action="{{route('videoUpload')}}"  id="video-upload" class='dropzone dz-clickable bg-clearer text-light'>
                 @csrf
                     <div class="dz-message needsclick">
                         <button type="button" class="dz-button">Glissez ici votre vidéo du match!</button><br>
                         <span class="note needsclick">(1 ou plusieurs en .mp4 ou .avi !)</span>
                     </div>
-                    <input type="hidden" id="game_id" name="game_id" value="">
+              </form> 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-          <button type="submit" class="btn btn-primary">Envoyer les vidéos</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Lets go !</button>
         </div>
-      </form> 
       </div>
     </div>
   </div>

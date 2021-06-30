@@ -381,7 +381,6 @@
         });
         
         
-        Dropzone.autoDiscover = false;
 
         $(function () {
             $('[data-toggle="tooltip"]').tooltip();
@@ -439,19 +438,9 @@
             });
             
             
-            // DROPZONE UPLOAD VIDEO
-            var CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
                 // var id = el.data('id');
-                
-                var myDropzone = new Dropzone('.dropzone',{ 
-                    maxFilesize: 15,  // 15 mb
-                    acceptedFiles: "image/*",
-                    
-                });
-                myDropzone.on("sending", function(file, xhr, formData) {
-                formData.append("_token", CSRF_TOKEN);
-                }); 
+             
             
             $('.open-video-modal').on('click', function(){
                   $('#game_id').val($(this).data('gameid'));

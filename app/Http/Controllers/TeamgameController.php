@@ -158,28 +158,9 @@ class TeamgameController extends Controller
 
 
   public function videoUpload(Request $request) {
-    dd($request);
-      if($request->hasFile('file')) {
-
-        // Upload path
-        $destinationPath = storage_path('app/public/video/moments_forts/');
-        
-
-        // Get file extension
-        $extension = $request->file('file')->getClientOriginalExtension();
-
-        // Valid extensions
-        $validextensions = array("mp4","mkv","avi");
-
-        // Check extension
-        if(in_array(strtolower($extension), $validextensions)){
-
-          // Rename file 
-          $fileName = $request->file('file')->getClientOriginalName().time() .'.' . $extension;
-          // Uploading file to given path
-          $request->file('file')->move($destinationPath, $fileName); 
-
-        }
-    }
+      $video = $request->file('file');
+      $videoName = time(). '.' . $video->extension();
+      $video->move(public_path('video/moments_forts'), $videoName);
+      return response()->json(['success'=>$videoName]);
   }
 }

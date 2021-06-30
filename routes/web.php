@@ -32,4 +32,4 @@ Route::get('/storeall/games/{btnrefresh?}', 'TeamgameController@findTeamGames')-
 
 
 //Dropzone
-Route::post('/game/videoupload/','TeamgameController@videoUpload')->name('videoUpload');
+Route::post('/game/videoupload','TeamgameController@videoUpload')->name('videoUpload');

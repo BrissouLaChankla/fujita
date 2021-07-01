@@ -118,7 +118,7 @@
         </div>
         <div class="col-md-2">
             <div class="d-flex justify-content-center">
-                <div class="position-relative open-profile-mvp" data-player="{{$game->MVP->first()->player->firstname}}">
+                <div class="position-relative open-profile-mvp" data-player="{{$game->MVP->first()->player->firstname}}" data-teamgame_id="{{$game->id}}" >
 
                     <img src="{{ asset('mvp/'.strtolower($game->MVP->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
@@ -205,6 +205,7 @@
             <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}" data-damages='@json($game->getDamages()[1])'></canvas>
         </div>
         <div>
+           
             <button type="button" class="btn btn-primary open-video-modal" data-gameid="{{$game->id}}">
                 Ajouter des videos
               </button>
@@ -383,6 +384,7 @@
         
 
         $(function () {
+            
             $('[data-toggle="tooltip"]').tooltip();
             
             $('.refresh-matches').on('click', function() {
@@ -426,7 +428,7 @@
                         data: {
                             'lol_id' : lol_id,
                             'teamgame_id' : teamgame_id,
-                            'champ': champ
+                            // 'champ': champ
                         },
                         success: function(results) {
                             $('.modal-body').html(results);
@@ -438,13 +440,11 @@
             });
             
             
-
-                // var id = el.data('id');
-             
             
             $('.open-video-modal').on('click', function(){
-                  $('#game_id').val($(this).data('gameid'));
+                  $('#gameIdtosend').val($(this).data('gameid'));
                   $('#addVideoModal').modal();
+                  Dropzone.forElement("#video-upload").removeAllFiles(true);
               });
         })
     </script>

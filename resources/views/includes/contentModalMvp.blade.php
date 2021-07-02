@@ -8,11 +8,9 @@
         </ul>
     </div>
     <div class="col-md-6">
-        <h3>Revivez les moments forts du match : </h3>
-        @foreach ($game->videos as $video)
-            <video class="video-js">
-                <source src="{{asset("video/moments_forts/".$video->name)}}" type="video/mp4" />
-            </video>
-        @endforeach
+        <h3>Revivez le moment fort du match : </h3>
+        <video width="100%" class="shadow" style="border-radius:50px" autoplay loop muted>
+            <source src="{{asset("video/highlight_fujita.mp4")}}" type="video/mp4" />
+        </video>
     </div>
 </div>

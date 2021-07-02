@@ -17,7 +17,6 @@ class TeamController extends Controller
         $lols = Lol::all();
         $mmrs = Mmr::all();
         $allgames = TeamGame::with([
-            'videos',
             'lols', 
             'MVP',
             'MVP.player'])->orderBy('created_at', 'desc')->get();

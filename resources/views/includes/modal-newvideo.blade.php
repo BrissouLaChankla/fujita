@@ -14,7 +14,6 @@
                         <button type="button" class="dz-button">Glissez ici votre vidéo du match!</button><br>
                         <span class="note needsclick">(1 ou plusieurs en .mp4 ou .avi !)</span>
                     </div>
-                    <input type="hidden" name="gameId" id="gameIdtosend" value="">
               </form> 
         </div>
         <div class="modal-footer">

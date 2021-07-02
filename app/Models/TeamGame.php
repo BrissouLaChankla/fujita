@@ -51,7 +51,4 @@ class TeamGame extends Model
     }
     
     
-    public function videos() {
-        return $this->hasMany(Video::class, 'game_id');
-    }
 }

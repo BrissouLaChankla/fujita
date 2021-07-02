@@ -157,5 +157,10 @@ class TeamgameController extends Controller
   }
 
 
-
+  public function videoUpload(Request $request) {
+      $video = $request->file('file');
+      $videoName = time(). '.' . $video->extension();
+      $video->move(public_path('video/moments_forts'), $videoName);
+      return response()->json(['success'=>$videoName]);
+  }
 }

@@ -6,6 +6,8 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link type="text/css" rel="stylesheet" href="{{asset("css/lightgallery-bundle.min.css")}}" />
+    
     <link rel="icon" type="image/png" href="{{asset('favicon.png')}}" />
 
     <title>Uraken Fujita - Team Esport sur League of Legends</title>
@@ -30,6 +32,8 @@
             @yield('content')
         </main>
     </div>
+    <script src="{{asset('js/lightgallery.min.js')}}"></script>
+    <script src="{{asset('js/lg-video.umd.js')}}"></script>
     @yield('scripts')
     {{-- @include('layouts.footer') --}}
 </body>

@@ -9,10 +9,40 @@
     </div>
     <div class="col-md-6">
         <h3>Revivez les moments forts du match : </h3>
-        @foreach ($game->videos as $video)
-            <video class="video-js">
-                <source src="{{asset("video/moments_forts/".$video->name)}}" type="video/mp4" />
-            </video>
-        @endforeach
+        <div id="lightgallery" class="row">
+                @foreach ($game->videos as $video)
+                        <a class="col" data-video='{"source": [{"src":"{{asset("video/moments_forts/".$video->name)}}", "type":"video/mp4"}], "attributes": {"preload": false, "controls": true}}'>
+                            <img class="img-fluid" src="{{asset('emblems/Emblem_Bronze.png')}}" />
+                        </a>
+                @endforeach
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            {{-- <a href="{{asset('emblems/Emblem_Bronze.png')}}" data-lg-size="1600-2400">
+                <video controls class="w-100">
+                    <source src="{{asset("video/moments_forts/".$video->name)}}" type="video/mp4" />
+                    </video>
+                </a> --}}
+            </div>
     </div>
 </div>
+<script>    
+    lightGallery(document.getElementById('lightgallery'), {
+        plugins: [lgVideo]
+    });
+</script>

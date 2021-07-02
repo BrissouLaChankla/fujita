@@ -277,7 +277,7 @@
                     backgroundColor: "lightblue"
                 }, {
                     tension: 0.1,
-                    label: "Lbrs7",
+                    label: "UK Louwie",
                     data: {!! $LouisSoloQ !!},
                     borderColor: "lightgreen",
                     backgroundColor: "lightgreen"
@@ -331,7 +331,7 @@
 
                 }, {
                     tension: 0.1,
-                    label: "Lbrs7",
+                    label: "UK Louwie",
                     data: {!! $LouisFlexQ !!},
                     borderColor: "lightgreen",
                     backgroundColor: "lightgreen"

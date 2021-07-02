@@ -11,7 +11,7 @@
 <div class="my-3 text-uppercase text-center">
     <h1 class="text-success">Esports and streaming</h1>
     <h2 class="text-white">Fujita</h2>
-</div> <i class="fas fa-crown"></i>
+</div>
 <div class="d-flex flex-wrap justify-content-center">
         <div class="d-flex align-items-center mx-5">
             <a href="https://twitter.com/EsportUraken" class="text-decoration-none text-white d-flex">

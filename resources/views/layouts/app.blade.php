@@ -21,7 +21,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
-    
+    @laravelPWA
 </head>
 <body id="{{$view_name}}">
     @include('layouts.nav')

@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'name' => 'Uraken Fujita - Team Esport sur League of Legends',
+    'name' => 'Uraken Fujita',
     'manifest' => [
-        'name' => 'Uraken Fujita - Team Esport sur League of Legends',
+        'name' => 'Uraken Fujita',
         'short_name' => 'Fujita',
         'start_url' => '/',
-        'background_color' => '#ffffff',
-        'theme_color' => '#000000',
-        'display' => 'standalone',
+        'background_color' => '#070720',
+        'theme_color' => '#ffffff',
+        'display' => 'fullscreen',
         'orientation'=> 'any',
-        'status_bar'=> 'black',
+        'status_bar'=> 'green',
         'icons' => [
             '72x72' => [
                 'path' => '/images/icons/icon-72x72.png',

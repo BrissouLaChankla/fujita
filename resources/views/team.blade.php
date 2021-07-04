@@ -94,9 +94,11 @@
 
 
     <div class="container bg-color p-md-5 mt-3 rounded shadow">
-        <div class="text-right">
-            <div class="btn btn-primary refresh-matches">Refresh matches</div>
-        </div>
+        @auth
+            <div class="text-right">
+                <div class="btn btn-primary refresh-matches">Refresh matches</div>
+            </div>
+        @endauth
         
         <h1><strong class="text-success">{{$winlose[0]}} wins</strong> / <strong class="text-danger">{{$winlose[1]}} losses</strong></h1>
 
@@ -205,10 +207,11 @@
             <canvas id="chartDamages_{{ $game->id }}" data-id="{{ $game->id }}" data-damages='@json($game->getDamages()[1])'></canvas>
         </div>
         <div>
-           
-            <button type="button" class="btn btn-primary open-video-modal" data-gameid="{{$game->id}}">
-                Ajouter des videos
-              </button>
+           @auth
+                <button type="button" class="btn btn-primary open-video-modal" data-gameid="{{$game->id}}">
+                    Ajouter des videos
+                </button>
+           @endauth
        
         </div>
     </div>
@@ -216,7 +219,9 @@
     @endforeach
 
     @include('includes.modal')
-    @include('includes.modal-newvideo')
+        @auth
+            @include('includes.modal-newvideo')
+        @endauth
     </div>
     <script>
         var ctx = document.getElementById('chartSoloQ').getContext('2d');

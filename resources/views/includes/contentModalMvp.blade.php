@@ -11,8 +11,8 @@
         <h3>Revivez les moments forts du match : </h3>
         <div id="lightgallery" class="row">
                 @foreach ($game->videos as $video)
-                        <a class="col" data-video='{"source": [{"src":"{{asset("video/moments_forts/".$video->name)}}", "type":"video/mp4"}], "attributes": {"preload": false, "controls": true}}'>
-                            <img class="img-fluid" src="{{asset('emblems/Emblem_Bronze.png')}}" />
+                        <a class="col-md" data-video='{"source": [{"src":"{{asset("video/moments_forts/".$video->name)}}", "type":"video/mp4"}], "attributes": {"preload": false, "controls": true}}'>
+                            <img class="img-fluid" src="{{asset('video/moments_forts/thumbnail.png')}}" />
                         </a>
                 @endforeach
             

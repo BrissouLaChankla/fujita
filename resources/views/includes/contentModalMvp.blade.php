@@ -6,16 +6,30 @@
             <li>1er au dégats des tourelles</li>
             <li>2em gars le moins mort</li>
         </ul>
+
+        <h3>Les commentaires :</h3>
+        @foreach ($game->commentaires as $commentaire)
+        <div class="row">
+
+            {{dd($game->commentaire)}}
+            <div class="col-4">
+                <img src="{{ asset('mvp/'.strtolower($game->commentaire).'.jpg') }}" alt="">
+            </div>
+
+            {{$commentaire->commentary}}
+        </div>
+        @endforeach
     </div>
     <div class="col-md-6">
         <h3>Revivez les moments forts du match : </h3>
-        <div id="lightgallery" class="row">
+        <div id="lightgallery">
                 @foreach ($game->videos as $video)
-                        <a class="col-md" data-video='{"source": [{"src":"{{asset("video/moments_forts/".$video->name)}}", "type":"video/mp4"}], "attributes": {"preload": false, "controls": true}}'>
+                        <a class="pointer @if(!$loop->first) d-none @endif" data-video='{"source": [{"src":"{{asset("video/moments_forts/".$video->name)}}", "type":"video/mp4"}], "attributes": {"preload": false, "controls": true}}'>
                             <img class="img-fluid" src="{{asset('video/moments_forts/thumbnail.png')}}" />
                         </a>
                 @endforeach
             
+              
             
             
             

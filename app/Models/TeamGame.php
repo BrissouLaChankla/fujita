@@ -58,4 +58,9 @@ class TeamGame extends Model
     public function videos() {
         return $this->hasMany(Video::class, 'game_id');
     }
+
+
+    public function commentaires() {
+        return $this->hasMany(TeamGame_User::class, 'teamgame_id');
+    }
 }

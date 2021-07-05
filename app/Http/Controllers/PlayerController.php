@@ -62,8 +62,6 @@ class PlayerController extends Controller
     }
 
     public function getMvpProfile(Request $request) {
-        // Lol::find($request->lol_id);
-        // TeamGame::find($request->teamgame_id);
         $mvpPlayer = TeamGame_Lol::where('lol_id', $request->lol_id)->where('teamgame_id', $request->teamgame_id)->first();
         $game = TeamGame::find($request->teamgame_id);
         return view('includes.contentModalMvp')->with([

@@ -130,7 +130,7 @@
             <div class="d-flex justify-content-center">
                 <div class="position-relative open-profile-mvp" data-player="{{$game->MVP->first()->player->firstname}}" data-teamgame_id="{{$game->id}}" >
 
-                    <img src="{{ asset('mvp/'.strtolower($game->MVP->first()->player->firstname).'.jpg') }}" class="img-fluid rounded shadow-sm img-mvp" alt="MVP">
+                    <img src="{{ asset('mvp/'.strtolower($game->MVP->first()->player->firstname).'.jpg') }}" class="img-fluid pointer rounded shadow-sm img-mvp" alt="MVP">
                     <img src="{{ asset('mvp/mvp.png') }}" class="mvp">
                     <h3 class="blaze-mvp m-0">{{$game->MVP->first()->player->firstname}}</h3>
                     @php

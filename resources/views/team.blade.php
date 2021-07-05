@@ -2,6 +2,7 @@
 
 @section('content')
 
+
     <div class="container bg-color p-3 rounded shadow">
         <h2 class="text-white text-center">Classements</h2>
         <div class="row">
@@ -482,7 +483,8 @@
                             type: "GET",
                             url: `/add/commentary`,
                             data: {
-                                'teamgame_id' : teamgame_id,
+                                
+                                'gameid' : teamgame_id,
                             },
                             success: function(results) {
                                 $('.modal-body').html(results);

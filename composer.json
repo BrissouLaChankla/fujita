@@ -17,7 +17,6 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "2.4",
         "laravelcollective/html": "^6.2",
-        "pbmedia/laravel-ffmpeg": "^7.5",
         "silviolleite/laravelpwa": "^2.0"
     },
     "require-dev": {

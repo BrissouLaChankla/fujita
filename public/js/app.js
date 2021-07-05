@@ -74268,6 +74268,8 @@ module.exports = function(module) {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
+__webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+
 window.Chart = __webpack_require__(/*! chart.js/dist/chart.js */ "./node_modules/chart.js/dist/chart.js");
 window.annotationPlugin = __webpack_require__(/*! chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js */ "./node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js");
 
@@ -74353,8 +74355,8 @@ $(function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\perso\fujita\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\perso\fujita\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\Dev\fujita\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\Dev\fujita\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

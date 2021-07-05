@@ -38,9 +38,9 @@ class User extends Authenticatable
     ];
     
   
-    public function teamgames()
+    public function commentaire($gameid)
     {
-        return $this->belongsToMany(TeamGame::class, 'teamgame_user', 'teamgame_id', 'user_id')->withPivot('commentary')->withTimestamps();
+        return $this->hasOne(TeamGame_User::class)->where('teamgame_id', $gameid)->first();
     }
 
 }

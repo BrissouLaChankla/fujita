@@ -8,7 +8,6 @@
 </form> 
 
 <script>
-                            //  Dropzone.forElement("#video-upload").removeAllFiles(true);
-                            Dropzone.autoDiscover = false;
-                            $("#video-upload").dropzone({ url: "/game/videoupload" });
+    Dropzone.autoDiscover = false;
+    $("#video-upload").dropzone({ url: "/game/videoupload" });
 </script>

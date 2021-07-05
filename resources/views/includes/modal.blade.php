@@ -11,7 +11,7 @@
           <i class="fas fa-spinner fa-spin"></i>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer la modal</button>
         </div>
       </div>
     </div>

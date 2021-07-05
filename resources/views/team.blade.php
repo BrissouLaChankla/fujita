@@ -219,7 +219,7 @@
                     <i class="fas fa-video"></i>
                 </button>
                 
-                <button type="button" class="btn bg-orange text-white open-commentary-modal" data-gameid="{{$game->id}}">
+                <button type="button" class="btn bg-orange text-white open-commentary-modal"  data-teamgame_id="{{$game->id}}">
                     <i class="fas fa-sticky-note"></i>
                 </button>
            @endauth
@@ -474,7 +474,6 @@
             @auth
                 $('.open-commentary-modal').on('click', function() {
                     var teamgame_id = $(this).data('teamgame_id');
-                        var user_id = {{\Auth::id()}};
                     $('#Modal').modal();
                     $('.modal-title').html("Ajoutez un commentaire à cette game");
                     $('.modal-body').html("<i class='fas fa-spinner fa-spin'></i>");
@@ -483,7 +482,6 @@
                             type: "GET",
                             url: `/add/commentary`,
                             data: {
-                                'user_id' : user_id,
                                 'teamgame_id' : teamgame_id,
                             },
                             success: function(results) {

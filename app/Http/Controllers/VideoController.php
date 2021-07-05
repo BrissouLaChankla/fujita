@@ -9,6 +9,12 @@ class VideoController extends Controller
 {
     
     
+    public function getvideoUpload($gameid) {
+        return view('includes.modal-newvideo')->with([
+            'gameid' => $gameid
+        ]);
+    }
+    
     public function videoUpload(Request $request) {
         
         //Store dans le dossier
@@ -22,10 +28,6 @@ class VideoController extends Controller
             'game_id' => $request->gameId,
             'video_path' => "video/moments_forts"
         ]);
-        
-        //Créer la miniature 
-        $thumbnails = new FFMPEG;
-        $thumbnails->getThumbnails($videoName, 'thumbnails', 5);
         
         
         return response()->json(['success'=>$videoName]);

@@ -659,7 +659,7 @@ a {
 }
 
 .bg-orange {
-  background-color: var(--main-orange);
+  background-color: var(--main-orange) !important;
 }
 
 .bg-red {
@@ -777,7 +777,7 @@ a {
 }
 
 .score-total {
-  font-size: 3rem;
+  font-size: 2.4rem;
   font-weight: 700;
   margin: 0;
 }
@@ -844,6 +844,20 @@ body#team {
   left: 50%;
   transform: translate(-50%);
   font-weight: 700;
+}
+
+.open-video-modal {
+  position: absolute;
+  right: -20px;
+  top: 20px;
+  border-radius: 50px !important;
+}
+
+.open-commentary-modal {
+  position: absolute;
+  right: -20px;
+  top: 64px;
+  border-radius: 50px !important;
 }
 
 /*!

@@ -33,6 +33,10 @@ class TeamGame extends Model
     }
 
 
+    public function users() {
+        $this->belongsToMany(User::class,'teamgame_user', 'teamgame_id')->withPivot('commentary')->withTimestamps();
+    }
+
     
     public function MVP() {
         return $this->lols()->reorder()->orderBy('mvp', 'desc');

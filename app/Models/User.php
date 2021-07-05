@@ -36,4 +36,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    
+  
+    public function teamgames()
+    {
+        return $this->belongsToMany(TeamGame::class, 'teamgame_user', 'teamgame_id', 'user_id')->withPivot('commentary')->withTimestamps();
+    }
+
 }

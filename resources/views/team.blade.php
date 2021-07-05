@@ -55,9 +55,12 @@
                         
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">
-                            {{array_values($averageStats["deaths"])[0]}}
-                        </h3>
+                        <div class="d-flex align-items-center">
+                            <h3 class="score-total mb-1">
+                                ~{{round(array_values($averageStats["deaths"])[0], 1)}} 
+                            </h3>
+                            <small class="ml-2"> <i class="fas fa-skull-crossbones"></i> / game</small>
+                        </div>
                     </div>
                     <span class="au-total">Le plus gros inter</span>
                 </div>
@@ -71,7 +74,11 @@
                     <div class="col-3 p-0" style="background-image:url('{{asset('mvp/'.strtolower(array_keys($averageStats["deaths"])[0]).'.jpg')}}'); background-size:cover; background-position:center">
                     </div>
                     <div class="col-9 ">
-                        <h3 class="score-total mb-1">{{round(array_values($averageStats["damages"])[0])}}</h3>
+                        <div class="d-flex align-items-center">
+                            <h3 class="score-total mb-1">{{round(array_values($averageStats["damages"])[0])}}</h3>
+                            <small class="ml-2"> <i class="fas fa-bomb"></i> / game</small>
+                        </div>
+                    
                     </div>
                     <span class="au-total">Le plus bourrin</span>
                 </div>
@@ -209,7 +216,11 @@
         <div>
            @auth
                 <button type="button" class="btn btn-primary open-video-modal" data-gameid="{{$game->id}}">
-                    Ajouter des videos
+                    <i class="fas fa-video"></i>
+                </button>
+                
+                <button type="button" class="btn bg-orange text-white open-commentary-modal" data-gameid="{{$game->id}}">
+                    <i class="fas fa-sticky-note"></i>
                 </button>
            @endauth
        
@@ -219,9 +230,7 @@
     @endforeach
 
     @include('includes.modal')
-        @auth
-            @include('includes.modal-newvideo')
-        @endauth
+  
     </div>
     <script>
         var ctx = document.getElementById('chartSoloQ').getContext('2d');
@@ -427,7 +436,6 @@
                 
       
                 $.ajax({
-                    
                         type: "GET",
                         url: `/get/mvpprofile`,
                         data: {
@@ -447,10 +455,48 @@
             
             
             $('.open-video-modal').on('click', function(){
-                  $('#gameIdtosend').val($(this).data('gameid'));
-                  $('#addVideoModal').modal();
-                  Dropzone.forElement("#video-upload").removeAllFiles(true);
+                  $('#Modal').modal();
+                  $('.modal-title').html("Ajoutez une ou plusieurs vidéos à cette game");
+                  $('.modal-body').html("<i class='fas fa-spinner fa-spin'></i>");
+                  var gameid = $(this).data('gameid');
+                  $.ajax({
+                        type: "GET",
+                        url: `/get/videoupload/${gameid}`,
+                        success: function(results) {
+                            $('.modal-body').html(results);
+                        },
+                        error: function() {
+                            console.log('erreur ajax');
+                        }
+                });
               });
+              
+            $('.open-commentary-modal').on('click', function() {
+                var teamgame_id = $(this).data('teamgame_id');
+                var user_id = {{\Auth::id()}};
+                $('#Modal').modal();
+                $('.modal-title').html("Ajoutez un commentaire à cette game");
+                $('.modal-body').html("<i class='fas fa-spinner fa-spin'></i>");
+                
+                $.ajax({
+                        type: "GET",
+                        url: `/add/commentary`,
+                        data: {
+                            'user_id' : user_id,
+                            'teamgame_id' : teamgame_id,
+                        },
+                        success: function(results) {
+                            $('.modal-body').html(results);
+                        },
+                        error: function() {
+                            console.log('erreur ajax');
+                        }
+                });
+            })
         })
+        
+     
     </script>
+    
+    
 @endsection

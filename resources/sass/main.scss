@@ -32,7 +32,7 @@ h1, h2, h3, h4, h5, p, span, a {
 }
 
 .bg-orange {
-    background-color:var(--main-orange);
+    background-color:var(--main-orange)!important;
 }
 
 .bg-red {
@@ -147,7 +147,7 @@ h1, h2, h3, h4, h5, p, span, a {
 }
 
 .score-total {
-    font-size: 3rem;
+    font-size: 2.4rem;
     font-weight: 700;
     margin: 0;
 }
@@ -228,4 +228,18 @@ body {
 .histo-lose {
     // background:rgba(255,67,67,.65) ;
 
+}
+
+.open-video-modal {
+    position: absolute;
+    right: -20px;
+    top:20px;
+    border-radius: 50px!important;
+}
+
+.open-commentary-modal {
+    position: absolute;
+    right: -20px;
+    top:64px;
+    border-radius: 50px!important;
 }

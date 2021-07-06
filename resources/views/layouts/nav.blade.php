@@ -12,6 +12,12 @@
     <a class="text-white font-weight-bold text-decoration-none p-3" href="/"><img src="{{asset('logo.webp')}}"></a>
     <a class="text-white font-weight-bold text-decoration-none p-3" href="">Boutique</a>
     <a class="text-white font-weight-bold text-decoration-none p-3" href="">Contact</a>
+    @auth
+      
+      <a class="btn btn-sm btn-danger text-white" href="{{ route('logout') }}">Se déconnecter de {{\Auth::user()->name}}</a>
+    @else 
+      <a class="btn btn-sm btn-primary text-white" href="{{ route('login') }}">Se connecter</a>
+    @endauth
   </nav>
 
 {{-- NAV MOBILE --}}

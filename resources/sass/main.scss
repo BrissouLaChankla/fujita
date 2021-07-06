@@ -172,9 +172,9 @@ nav, .nav {
 
 body {
     min-height: 100vh;
-
     
-    &#welcome {
+    
+    &#welcome, &#auth\.login {
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;

@@ -38,3 +38,13 @@ Route::post('/game/videoupload','VideoController@videoUpload')->name('videoUploa
 //Commentary
 Route::get('/add/commentary', 'CommentaryController@addComment')->name('add-comment');
 Route::post('/post/commentary', 'CommentaryController@postComment')->name('post-comment');
+
+
+//Logout
+Route::get('logout', function ()
+{
+    auth()->logout();
+    Session()->flush();
+
+    return Redirect::to('/equipe');
+})->name('logout');

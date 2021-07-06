@@ -14,4 +14,7 @@ class TeamGame_User extends Model
         'commentary'
     ];
 
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

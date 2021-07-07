@@ -22,6 +22,17 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+            appId: "1c608f71-7113-457a-9107-3821e9748427",
+            });
+        });
+    </script>
+
 </head>
 <body id="{{$view_name}}">
     @include('layouts.nav')

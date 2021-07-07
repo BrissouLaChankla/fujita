@@ -5,15 +5,15 @@
 <div class="text-white">
    
 <div class="container">
-    <img src="http://ddragon.leagueoflegends.com/cdn/{{$ddragonversion}}/img/profileicon/{{$summoner->profileIconId}}.png" style="width:100px" alt="">
-    <h2 class="text-uppercase text-success">
-        {{$player->firstname}} {{substr($player->lastname, 0, 1)}}.
-    </h2>
-    <h1 class="text-white font-weight-bold pseudo">
-        {{$summoner->name}}
-    </h1>
     <div class="row">
         <div class="col-md-7">
+            <img src="http://ddragon.leagueoflegends.com/cdn/{{$ddragonversion}}/img/profileicon/{{$summoner->profileIconId}}.png" style="width:100px" alt="">
+            <h2 class="text-uppercase text-success">
+                {{$player->firstname}} {{substr($player->lastname, 0, 1)}}.
+            </h2>
+            <h1 class="text-white font-weight-bold pseudo">
+                {{$summoner->name}}
+            </h1>
             <div class="row">
                 <div class="col-md-4">
                     <h3 class="player-label">Age</h3>
@@ -67,7 +67,7 @@
             </div>
         </div>
         <div class="col-md-5">
-            <img src="{{$player->favchar_path}}" class="img-fluid" alt="">
+            <img src="{{asset('img/vayne-bg.png')}}" class="img-fluid" alt="">
         </div>
     </div>
 </div>

@@ -185,7 +185,7 @@
                                 {{ $lol->pivot->assists }}
                             </strong>
                         </td>
-                        <td><i class="far fa-eye"></i> {{ $lol->pivot->wardsplaced }}</td>
+                        <td><i class="far fa-eye"></i> {{ $lol->pivot->visionscore }}</td>
                         <td>{{ $lol->pivot->cs}} cs</td>
                         <td class="mvp-classement" >
                             @switch($lol->pivot->mvp)

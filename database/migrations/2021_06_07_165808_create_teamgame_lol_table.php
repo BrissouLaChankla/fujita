@@ -25,7 +25,7 @@ class CreateTeamgameLolTable extends Migration
             $table->tinyInteger('deaths');
             $table->tinyInteger('assists');
             $table->tinyInteger('largestmultikill');
-            $table->tinyInteger('wardsplaced');
+            $table->tinyInteger('visionscore');
             $table->tinyInteger('cs');
             $table->timestamps();
         });

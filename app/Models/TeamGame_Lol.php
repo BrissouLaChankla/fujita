@@ -19,7 +19,7 @@ class TeamGame_Lol extends Model
         'deaths',
         'assists',
         'largestmultikill',
-        'wardsplaced',
+        'visionscore',
         'cs',
         'mvp'
     ];

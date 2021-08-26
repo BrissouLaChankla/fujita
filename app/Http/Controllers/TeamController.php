@@ -118,27 +118,27 @@ class TeamController extends Controller
                     case 1:
                         $briceAllDamages[] = $participationGame->damages; 
                         $briceAllDeaths[] = $participationGame->deaths; 
-                        $briceAllVisions[] = $participationGame->wardsplaced; 
+                        $briceAllVisions[] = $participationGame->visionscore; 
                     break;
                     case 2:
                         $clementAllDamages[] = $participationGame->damages; 
                         $clementAllDeaths[] = $participationGame->deaths; 
-                        $clementAllVisions[] = $participationGame->wardsplaced; 
+                        $clementAllVisions[] = $participationGame->visionscore; 
                     break;
                     case 3:
                         $adrienAllDamages[] = $participationGame->damages; 
                         $adrienAllDeaths[] = $participationGame->deaths; 
-                        $adrienAllVisions[] = $participationGame->wardsplaced; 
+                        $adrienAllVisions[] = $participationGame->visionscore; 
                     break;
                     case 4:
                         $louisAllDamages[] = $participationGame->damages; 
                         $louisAllDeaths[] = $participationGame->deaths; 
-                        $louisAllVisions[] = $participationGame->wardsplaced; 
+                        $louisAllVisions[] = $participationGame->visionscore; 
                     break;
                     case 5:
                         $sachaAllDamages[] = $participationGame->damages; 
                         $sachaAllDeaths[] = $participationGame->deaths; 
-                        $sachaAllVisions[] = $participationGame->wardsplaced; 
+                        $sachaAllVisions[] = $participationGame->visionscore; 
                     break;
                     }
                 }

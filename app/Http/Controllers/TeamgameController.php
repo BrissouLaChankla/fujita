@@ -111,8 +111,7 @@ class TeamgameController extends Controller
                 if($participantIdent->getData()['participantId'] == $participant->participantId) {
                   $teamgame_id = TeamGame::where('game_id', $game->gameId)->first()->id;
                   $lol_id = Lol::where('id_sum', $participantIdent->player->accountId)->first()->id;
-                  // dd($participant->stats);
-                  // dd($game);
+                  dd($participant->stats);
                   $mvpScore = $this->calculateScoreMVP($participant->stats);
                   // dd($mvpScore);
                   $teamgame_lol = TeamGame_Lol::firstOrCreate([
@@ -126,7 +125,7 @@ class TeamgameController extends Controller
                     'deaths' => $participant->stats->deaths,
                     'assists' => $participant->stats->assists,
                     'largestmultikill' => $participant->stats->largestMultiKill,
-                    'wardsplaced' => $participant->stats->visionScore,
+                    'visionscore' => $participant->stats->visionScore,
                     'cs' => ($participant->stats->totalMinionsKilled + $participant->stats->neutralMinionsKilled),
                   ], ['mvp' => $mvpScore]);
 

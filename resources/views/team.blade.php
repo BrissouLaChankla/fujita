@@ -306,13 +306,13 @@
                 labels: {!! $days !!},
                 datasets: [{
                     tension: 0.1,
-                    label: "Prépuce Endolori",
+                    label: "UK Brissou",
                     data: {!! $BriceSoloQ !!},
                     borderColor: "orange",
                     backgroundColor: "orange"
                 }, {
                     tension: 0.1,
-                    label: "Bepo",
+                    label: "UK Bepo",
                     data: {!! $BepoSoloQ !!},
                     borderColor: "lightblue",
                     backgroundColor: "lightblue"
@@ -324,13 +324,13 @@
                     backgroundColor: "lightgreen"
                 }, {
                     tension: 0.1,
-                    label: "Azakatana",
+                    label: "UK Abyss",
                     data: {!! $AzaSoloQ !!},
                     borderColor: "lightpink",
                     backgroundColor: "lightpink"
                 }, {
                     tension: 0.1,
-                    label: "Youmel",
+                    label: "UK Youmel",
                     data: {!! $YoumelSoloQ !!},
                     borderColor: "lightcoral",
                     backgroundColor: "lightcoral"
@@ -357,14 +357,14 @@
                 labels: {!! $days !!},
                 datasets: [{
                     tension: 0.1,
-                    label: "Prépuce Endolori",
+                    label: "UK Brissou",
                     data: {!! $BriceFlexQ !!},
                     borderColor: "orange",
                     backgroundColor: "orange"
 
                 }, {
                     tension: 0.1,
-                    label: "Bepo",
+                    label: "UK Bepo",
                     data: {!! $BepoFlexQ !!},
                     borderColor: "lightblue",
                     backgroundColor: "lightblue"
@@ -380,14 +380,14 @@
 
                 }, {
                     tension: 0.1,
-                    label: "Azakatana",
+                    label: "UK Abyss",
                     data: {!! $AzaFlexQ !!},
                     borderColor: "lightpink",
                     backgroundColor: "lightpink"
 
                 }, {
                     tension: 0.1,
-                    label: "Youmel",
+                    label: "UK Youmel",
                     data: {!! $YoumelFlexQ !!},
                     borderColor: "lightcoral",
                     backgroundColor: "lightcoral"

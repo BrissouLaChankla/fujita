@@ -28,6 +28,10 @@ class TeamGame extends Model
         'deaths',
         'assists',
         'largestmultikill',
+        'damagetaken',
+        'wardsplaced',
+        'visionwards',
+        'cc',
         'visionscore',
         'cs','mvp')->orderBy('order_histo', 'asc');
     }

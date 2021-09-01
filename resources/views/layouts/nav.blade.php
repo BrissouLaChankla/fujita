@@ -25,7 +25,7 @@
       <a class="text-white font-weight-bold text-decoration-none p-3" href="/"><img src="{{asset('logo.webp')}}"></a>
       <button class="d-md-none text-white hamburger hamburger--elastic" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"  aria-label="{{ __('Toggle navigation') }}">
         <span class="hamburger-box">
-          <span class="hamburger-inner"></span>
+          <span class="hamburger-inner bg-white"></span>
         </span>
       </button> 
   </nav>

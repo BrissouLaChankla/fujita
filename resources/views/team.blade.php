@@ -150,6 +150,31 @@
                 
                     @foreach ($game->lols as $lol)
                     {{-- {{dd($game->lols)}} --}}
+                    {{-- <tr>
+                        <td> {{ $lol->pivot->kills }}</td>
+                        <td> {{ $lol->pivot->deaths }}</td>
+                        <td> {{ $lol->pivot->assists }}</td>
+                        <td></td>
+                        <td>@if($game->victory == 1)WIN @else LOSE @endif</td>
+                        <td></td>
+                        <td class="killtotaux"></td>
+                        <td>{{substr(
+                            gmdate("i:s", $game->duree), 2)
+                            }}
+                            </td>
+
+                            <td>
+                            {{ $lol->pivot->cs}}
+                            </td>
+                            <td></td>
+                            <td>{{$lol->pivot->golds}}</td>
+                            <td>{{$lol->pivot->cc}}</td>
+                            <td>{{$lol->pivot->damages}}</td>
+                            <td>{{$lol->pivot->damagetaken}}</td>
+                            <td>{{$lol->pivot->visionscore}}</td>
+                            <td>{{$lol->pivot->wardsplaced}}</td>
+                            <td>{{$lol->pivot->visionwards}}</td>
+                    </tr> --}}
                   
                       <tr class="history-text">
                         <td>
@@ -427,7 +452,7 @@
                 var teamgame_id = $(this).data('teamgame_id');
                 var lol_id = $(this).data('lol_id');
             
-                // <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{ $champ['id'] }}_0.jpg"
+                // <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{ $champ['id'] }}_0.jpg"/>
 
                 $('#Modal').modal();
                 $('.modal-body').html("<i class='fas fa-spinner fa-spin'></i>");

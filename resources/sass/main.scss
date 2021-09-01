@@ -15,6 +15,12 @@ h1, h2, h3, h4, h5, p, span, a {
     --main-orange: #eda315;
   }
 
+
+.hamburger-inner {
+    &::after, &::before {
+        background-color: white!important;
+    }
+}
 .bg-color {
     background-color: var(--main-bg-color)!important;
 }

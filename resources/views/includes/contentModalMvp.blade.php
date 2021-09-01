@@ -1,6 +1,5 @@
 <div class="row">
     <div class="col-md-6 d-flex flex-column">
-        Adrien est :
         <ul>
             <li>1er au dégat</li>
             <li>1er au dégats des tourelles</li>

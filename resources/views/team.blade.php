@@ -111,7 +111,7 @@
         <h1><strong class="text-success">{{$winlose[0]}} wins</strong> / <strong class="text-danger">{{$winlose[1]}} losses</strong></h1>
 
         @foreach ($allgames as $key => $game)
-        @if($game->MVP)
+        @if($game->MVP->first()->player)
             <h2 class="text-center mt-3 text-uppercase">
                 @if ($game->victory == 1)
                     <strong class="color-win"> Victoire </strong>

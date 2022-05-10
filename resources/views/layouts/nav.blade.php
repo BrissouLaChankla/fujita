@@ -1,17 +1,15 @@
 {{-- NAV DESKTOP --}}
 <nav class="d-none d-md-flex justify-content-center align-items-center">
     <a class="text-white font-weight-bold text-decoration-none p-3" href="/">Accueil</a>
+    <a class="text-white font-weight-bold text-decoration-none p-3" href="/"><img src="{{asset('logo.webp')}}"></a>
     <div class="dropdown">
         <a class="text-white font-weight-bold text-decoration-none p-3" href="{{route('show-team')}}">L'équipe</a>
         <div class="dropdown-content">
-            @foreach ($players as $player)
-                <a href="{{route('show-player', $player->slug)}}">{{$player->lol->pseudo}}</a>
-            @endforeach
+          @foreach ($players as $player)
+          <a href="{{route('show-player', $player->slug)}}">{{$player->lol->pseudo}}</a>
+          @endforeach
         </div>
       </div>
-    <a class="text-white font-weight-bold text-decoration-none p-3" href="/"><img src="{{asset('logo.webp')}}"></a>
-    <a class="text-white font-weight-bold text-decoration-none p-3" href="">Boutique</a>
-    <a class="text-white font-weight-bold text-decoration-none p-3" href="">Contact</a>
   </nav>
 
 {{-- NAV MOBILE --}}
@@ -38,13 +36,8 @@
               @endforeach
           </ul>
         </div>
-      <a class="text-white font-weight-bold text-decoration-none py-4" href="">Boutique</a>
-      <a class="text-white font-weight-bold text-decoration-none py-4" href="">Contact</a>
       </div>
   </div>
-
-
-
   <style>
 
 

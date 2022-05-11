@@ -186,7 +186,7 @@ body {
     }
 }
 
-.hamburger-inner {
+.hamburger-inner, .hamburger-inner:after, .hamburger-inner:before {
     background-color:white!important;
 }
 

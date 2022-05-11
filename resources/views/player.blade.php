@@ -5,14 +5,14 @@
 <div class="text-white">
    
 <div class="container p-3 rounded shadow mb-3" style="background-color:#00000085">
-<div class="d-flex justify-content-between">
+<div class="d-flex justify-content-between flex-wrap">
     <div>
         <img src="http://ddragon.leagueoflegends.com/cdn/{{$ddragonversion}}/img/profileicon/{{$summoner->profileIconId}}.png" class="shadow rounded mb-2" style="width:100px" alt="">
         <h2 class="text-uppercase text-success">
             {{$player->firstname}} {{substr($player->lastname, 0, 1)}}.
         </h2>
     </div>
-    <h1 class="text-white font-weight-bold pseudo">
+    <h1 class="text-white font-weight-bold pseudo display-4 align-self-center" >
         {{$summoner->name}}
     </h1>
 
